@@ -11,4 +11,5 @@ services:
     environment:
       - TZ=Asia/Shanghai
       - LLM_API_KEY=${LLM_API_KEY:-sk-8795f55f007f4adfbd7e6cf75bf7c7cd}
+      - ARK_API_KEY=${ARK_API_KEY:-ark-4f063f47-ee3d-45a2-a6db-677cc71cf784-041e9}
     restart: unless-stopped
