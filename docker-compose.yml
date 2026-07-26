@@ -3,11 +3,12 @@ version: '3.8'
 services:
   ai-staff:
     build: .
-    container_name: ai-staff
+    container_name: deploy-easy
     ports:
-      - "8002:8000"
+      - "8003:8000"
     volumes:
       - ./data:/app/data
     environment:
       - TZ=Asia/Shanghai
+      - LLM_API_KEY=${LLM_API_KEY:-sk-8795f55f007f4adfbd7e6cf75bf7c7cd}
     restart: unless-stopped

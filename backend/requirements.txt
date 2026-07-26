@@ -12,3 +12,6 @@ aiosqlite
 requests
 aliyun-python-sdk-core
 aliyun-python-sdk-dysmsapi
+paramiko
+cryptography
+sse-starlette

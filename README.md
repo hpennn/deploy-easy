@@ -1,142 +1,90 @@
-# Deploy Easy
+# 智能部署助手 (Deploy Easy)
 
-🚀 AI自动化部署助手 - 一键生成 Dockerfile、Nginx 配置、部署脚本，让部署变得简单。
+一站式智能部署平台，集成 AI 项目自动部署与 8 大配置生成技能。
 
-## 功能特性
+## ✨ 功能特性
 
-- 🐳 **Dockerfile生成**：根据应用描述生成优化的多阶段Dockerfile，包含最佳实践
-- 📦 **Docker Compose**：生成完整编排配置，含服务定义、网络、卷、健康检查
-- 🌐 **Nginx配置**：反向代理、SSL、Gzip、安全头、负载均衡一键生成
-- 🚀 **部署脚本**：自动化Shell部署脚本，含环境检查、依赖安装、回滚机制
-- 🔑 **环境变量**：生成 .env 模板 + .env.example，含安全建议和默认值
-- 🔒 **SSL证书**：Let's Encrypt/certbot 命令和 Nginx SSL 配置
-- 🔄 **CI/CD流水线**：GitHub Actions / GitLab CI 完整配置
-- 🗄️ **数据库配置**：初始化SQL、用户权限、备份脚本
+### 🚀 自动化部署 (from ai-auto-deploy)
+- **上传项目识别** - 上传 ZIP 自动识别项目类型，推荐部署方案
+- **服务器管理** - 添加/管理多台服务器，支持 SSH 密钥和密码认证
+- **一键部署执行** - 生成部署脚本并远程执行，支持 SSE 实时日志
+- **代码检测修复** - 检测代码语法错误、括号匹配等问题，AI 自动修复
+- **AI 生成项目** - 根据描述自动生成前后端项目代码
+- **AI 代码修改** - 上传项目 ZIP，AI 根据需求修改代码
 
-## 快速部署
+### ⚙️ 配置生成技能 (8个)
+1. 🐳 **Dockerfile 生成** - 生成优化的多阶段 Dockerfile
+2. 🐳 **Docker Compose** - 生成完整的 docker-compose.yml 编排配置
+3. 🌐 **Nginx 配置** - 生成反向代理、SSL、负载均衡配置
+4. 🚀 **部署脚本** - 生成自动化部署 Shell 脚本
+5. 🔑 **环境变量** - 生成环境变量模板和安全配置
+6. 🔒 **SSL 证书** - 生成 SSL 证书配置和 HTTPS 设置
+7. 🔄 **CI/CD 流水线** - 生成 GitHub Actions 或 GitLab CI 配置
+8. 🗄️ **数据库配置** - 生成数据库初始化 SQL、权限配置和备份脚本
 
-### 方式一：Docker 部署（推荐）
+### 📦 项目中心
+- 内置 24 个项目数据，支持按类型筛选
 
+## 🛠 技术栈
+
+- **后端**: FastAPI + SQLite
+- **前端**: Vue 3 + Element Plus + Vite
+- **AI**: DashScope (qwen-plus) + 豆包大模型
+- **SSH**: Paramiko
+
+## 🚀 快速开始
+
+### Docker 部署 (推荐)
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/hpennn/deploy-easy.git
-cd deploy-easy
-
-# 2. 配置环境变量
-cp .env.example .env
-# 编辑 .env 填写 LLM_API_KEY
-
-# 3. 启动
 docker-compose up -d
-
-# 4. 访问
-open http://localhost:8080
 ```
+访问 `http://localhost:8003`
 
-### 方式二：直接部署到服务器
-
+### 本地开发
 ```bash
-# 1. 安装 Python 3.10+
-python3 --version
-
-# 2. 安装依赖
-cd deploy-easy
+# 安装后端依赖
 pip install -r backend/requirements.txt
 
-# 3. 配置环境变量
-export LLM_API_KEY="your_key"
-export LLM_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
+# 安装前端依赖并构建
+cd frontend && npm install && npm run build && cd ..
 
-# 4. 启动后端
-cd backend
-uvicorn main:app --host 0.0.0.0 --port 8080
-
-# 5. 访问 http://your-server:8080
+# 启动服务
+python backend/main.py
 ```
 
-### 方式三：Nginx 反向代理
-
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-    
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-## 环境变量
-
-| 变量 | 说明 | 必填 | 默认值 |
-|------|------|------|--------|
-| LLM_API_KEY | 大模型 API Key | ✅ | - |
-| LLM_BASE_URL | API 地址 | ❌ | 阿里通义 |
-| LLM_MODEL | 文本模型 | ❌ | qwen-plus |
-| LLM_VL_MODEL | 多模态模型 | ❌ | qwen-vl-plus |
-
-## 技能开发
-
-自定义技能只需实现统一接口：
-
-```python
-# backend/skills/preset/my_skill.py
-SKILL_META = {
-    "id": "my_skill",
-    "name": "我的技能",
-    "icon": "🔧",
-    "description": "技能描述",
-    "keywords": ["关键词"],
-    "input_type": "textarea",
-    "output_type": "text",
-}
-
-async def execute(input_data: dict) -> dict:
-    # 你的技能逻辑
-    return {"content": "处理结果"}
-```
-
-然后在 `registry.py` 中注册即可。
-
-## 项目结构
+## 📁 项目结构
 
 ```
 deploy-easy/
-├── frontend/          # PWA前端
-│   ├── index.html     # Deploy Easy 主界面
-│   ├── manifest.json
-│   └── icons/
-├── backend/
-│   ├── main.py        # FastAPI入口
-│   ├── skills/        # 技能引擎
-│   │   ├── registry.py    # 技能注册中心
-│   │   ├── engine.py      # 执行引擎
-│   │   ├── llm_client.py  # LLM客户端
-│   │   └── preset/        # 预置部署技能
-│   │       ├── dockerfile_gen.py
-│   │       ├── docker_compose.py
-│   │       ├── nginx_config.py
-│   │       ├── deploy_script.py
-│   │       ├── env_config.py
-│   │       ├── ssl_setup.py
-│   │       ├── ci_cd.py
-│   │       └── db_setup.py
-│   └── routers/       # API路由
-├── .env.example
+├── backend/           # FastAPI 后端
+│   ├── main.py        # 应用入口
+│   ├── routers/       # 原有路由模块
+│   └── skills/        # 8个配置生成技能
+├── web/               # 自动部署 API 模块
+│   ├── api/
+│   │   ├── deploy.py  # 部署核心
+│   │   ├── servers.py # 服务器管理
+│   │   ├── fix.py     # 代码修复
+│   │   ├── generate.py# 项目生成
+│   │   ├── auth.py    # 认证
+│   │   ├── payment.py # 支付
+│   │   └── admin.py   # 管理后台
+│   └── database.py    # 部署数据库
+├── src/               # CLI 核心逻辑
+│   └── cli.py         # 项目检测、脚本生成
+├── frontend/          # Vue.js 前端
+│   ├── src/
+│   │   ├── App.vue    # 主组件
+│   │   └── main.js    # 入口
+│   └── dist/          # 构建产物
+├── Dockerfile
 └── docker-compose.yml
 ```
 
-## API 文档
+## 🔑 环境变量
 
-启动后端后访问 `http://localhost:8080/docs` 查看完整API文档。
+- `LLM_API_KEY` - DashScope API Key (配置生成技能使用)
 
-主要接口：
-- `GET /api/skills` - 技能列表
-- `POST /api/skills/{id}/execute` - 执行技能
-
-## License
+## 📄 License
 
 MIT

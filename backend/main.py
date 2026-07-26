@@ -11,6 +11,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import init_db
 from routers import chat, staff, webhook, auth, admin, subscription, upload, broadcast, schedule, skills, knowledge, workflow, computer_ctrl, agent_chat
 
+# Auto-deploy web modules
+from web.api.deploy import router as auto_deploy_router
+from web.api.servers import router as auto_servers_router
+from web.api.fix import router as auto_fix_router
+from web.api.generate import router as auto_generate_router
+from web.api.payment import router as auto_payment_router
+from web.api.admin import router as auto_admin_router
+from web.api.auth import router as auto_auth_router
+
 # Initialize database
 init_db()
 
@@ -22,13 +31,17 @@ init_credits_db()
 from auth_database import init_auth_db
 init_auth_db()
 
+# Initialize auto-deploy database
+from web.database import init_db as init_deploy_db
+init_deploy_db()
+
 # Load skills engine
 import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from skills.registry import registry
 registry.load_preset_skills()
 
-app = FastAPI(title="Deploy Easy", version="2.2.0")
+app = FastAPI(title="Deploy Easy", version="3.0.0")
 
 # CORS
 app.add_middleware(
@@ -248,9 +261,32 @@ async def embed_script(staff_id: int):
 """
     return Response(content=js_code, media_type="application/javascript")
 
-# Static files
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
-app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+# Auto-deploy routes
+app.include_router(auto_deploy_router, prefix="/api/deploy", tags=["auto-deploy"])
+app.include_router(auto_servers_router, prefix="/api/servers", tags=["auto-servers"])
+app.include_router(auto_fix_router, prefix="/api/fix", tags=["auto-fix"])
+app.include_router(auto_generate_router, prefix="/api/generate", tags=["auto-generate"])
+app.include_router(auto_payment_router, prefix="/api/payment", tags=["auto-payment"])
+app.include_router(auto_admin_router, prefix="/api/admin-auto", tags=["auto-admin"])
+app.include_router(auto_auth_router, prefix="/api/auth-auto", tags=["auto-auth"])
+
+# Static files - Vue.js built frontend
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+frontend_dist = os.path.join(project_root, "frontend", "dist")
+frontend_static = os.path.join(project_root, "frontend")
+
+# Determine which frontend to serve
+if os.path.isdir(frontend_dist) and os.path.isfile(os.path.join(frontend_dist, "index.html")):
+    frontend_path = frontend_dist
+else:
+    frontend_path = frontend_static
+
+# Mount assets if they exist
+assets_dir = os.path.join(frontend_path, "assets")
+if os.path.isdir(assets_dir):
+    app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+app.mount("/static", StaticFiles(directory=frontend_static), name="static")
 
 
 @app.get("/")
@@ -260,17 +296,41 @@ async def serve_index():
 
 @app.get("/manifest.json")
 async def serve_manifest():
-    return FileResponse(os.path.join(frontend_path, "manifest.json"))
+    manifest = os.path.join(frontend_path, "manifest.json")
+    if os.path.isfile(manifest):
+        return FileResponse(manifest)
+    return FileResponse(os.path.join(frontend_static, "manifest.json"))
 
 
 @app.get("/sw.js")
 async def serve_sw():
-    return FileResponse(os.path.join(frontend_path, "sw.js"))
+    sw = os.path.join(frontend_path, "sw.js")
+    if os.path.isfile(sw):
+        return FileResponse(sw)
+    return FileResponse(os.path.join(frontend_static, "sw.js"))
 
 
 @app.get("/icons/{filename}")
 async def serve_icon(filename: str):
-    return FileResponse(os.path.join(frontend_path, "icons", filename))
+    icon = os.path.join(frontend_path, "icons", filename)
+    if os.path.isfile(icon):
+        return FileResponse(icon)
+    return FileResponse(os.path.join(frontend_static, "icons", filename))
+
+
+# SPA fallback for Vue.js router
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str):
+    # Try to serve the exact file first
+    file_path = os.path.join(frontend_path, full_path)
+    if os.path.isfile(file_path):
+        return FileResponse(file_path)
+    # Fall back to index.html for SPA routing
+    index = os.path.join(frontend_path, "index.html")
+    if os.path.isfile(index):
+        return FileResponse(index)
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse("<h1>智能部署助手</h1><p>前端未构建，请先运行: cd frontend && npm install && npm run build</p>")
 
 
 @app.get("/health")
