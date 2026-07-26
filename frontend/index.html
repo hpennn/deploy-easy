@@ -179,6 +179,28 @@
         </div>
     </div>
 
+    <!-- Page: 项目 -->
+    <div id="page-projects" class="page h-full" style="padding-bottom: 80px;">
+        <div class="flex items-center justify-between px-5 py-3.5 bg-white/95 backdrop-blur-md border-b border-slate-100/80 sticky top-0 z-10">
+            <div class="flex items-center gap-2">
+                <h1 class="text-base font-bold text-slate-800">项目中心</h1>
+                <span id="project-count" class="text-[10px] text-indigo-400 bg-indigo-50 px-2 py-0.5 rounded-full font-medium"></span>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto px-4 py-4">
+            <div id="project-stats" class="grid grid-cols-3 gap-2 mb-4"></div>
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">所有项目</h2>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="filterProjects('all')" id="filter-all" class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-500 font-medium">全部</button>
+                    <button onclick="filterProjects('Docker')" id="filter-Docker" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-50 text-slate-400 font-medium">Docker</button>
+                    <button onclick="filterProjects('Cloudflare')" id="filter-Cloudflare" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-50 text-slate-400 font-medium">CF</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3" id="projects-grid"></div>
+        </div>
+    </div>
+
     <!-- Page: 任务 -->
     <div id="page-tasks" class="page h-full" style="padding-bottom: 80px;">
         <div class="flex items-center justify-between px-5 py-3.5 bg-white/95 backdrop-blur-md border-b border-slate-100/80 sticky top-0 z-10">
@@ -383,6 +405,12 @@
             </span>
             <span class="text-[10px] font-medium">智能体</span>
         </button>
+        <button onclick="navigateTo('projects')" class="tab-btn flex flex-col items-center gap-0.5 px-5 py-1.5 rounded-xl" data-tab="projects">
+            <span class="tab-icon w-7 h-7 rounded-lg flex items-center justify-center">
+                <svg class="w-4.5 h-4.5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+            </span>
+            <span class="text-[10px] font-medium">项目</span>
+        </button>
         <button onclick="navigateTo('tasks')" class="tab-btn flex flex-col items-center gap-0.5 px-5 py-1.5 rounded-xl" data-tab="tasks">
             <span class="tab-icon w-7 h-7 rounded-lg flex items-center justify-center">
                 <svg class="w-4.5 h-4.5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
@@ -424,6 +452,33 @@ const DEFAULT_AGENTS = [
     { id: 'security', icon: '🔒', name: '安全顾问', role: 'SSL证书、安全加固、权限管理', color: 'from-emerald-500 to-green-600', welcome: '你好！我是安全顾问，帮你配置SSL、加固服务器安全、管理访问权限。', isPreset: true },
     { id: 'dba', icon: '🗄️', name: 'DBA专家', role: '数据库设计、优化、备份策略', color: 'from-orange-500 to-red-600', welcome: '你好！我是DBA专家，帮你设计数据库、优化查询、配置备份策略。', isPreset: true },
     { id: 'nginx_expert', icon: '🌐', name: 'Nginx专家', role: '反向代理、负载均衡、性能优化', color: 'from-green-500 to-teal-600', welcome: '你好！我是Nginx专家，帮你配置反向代理、负载均衡、性能调优。', isPreset: true }
+];
+
+const PROJECTS = [
+    { id: 'ai-staff', name: 'AI智能体工作台', domain: 'www.zhinenti.cn', repo: 'hpennn/ai-staff', type: 'Docker', port: '8000:8000', status: 'running', desc: '多角色AI助手平台，支持技能/工作流自定义', dockerName: 'ai-staff' },
+    { id: 'ai-auto-deploy', name: 'AI自动部署', domain: 'auto.zhinenti.cn', repo: 'hpennn/ai-auto-deploy', type: 'Docker', port: '8001:8000', status: 'running', desc: '积分消耗制自动部署工具', dockerName: 'ai-auto-deploy' },
+    { id: 'deploy-easy', name: '智能部署助手', domain: 'deploy.zhinenti.cn', repo: 'hpennn/deploy-easy', type: 'Docker', port: '8003:8000', status: 'running', desc: '一键生成Docker/Nginx/部署配置', dockerName: 'deploy-easy' },
+    { id: 'marketing-craft', name: '智能营销助手', domain: 'craft.zhinenti.cn', repo: 'hpennn/marketing-craft', type: 'Docker', port: '8004:8000', status: 'running', desc: '智能营销内容生成器', dockerName: 'marketing-craft' },
+    { id: 'ecom-bot', name: '电商客服机器人', domain: 'zhinenti.cn:8000', repo: 'hpennn/ecom-bot', type: 'Docker', port: '8002:8000', status: 'running', desc: '电商智能客服，接入虎皮椒支付', dockerName: 'ecom-bot' },
+    { id: 'kuaisu-tools', name: '快速工具箱', domain: 'www.kuaisu.online', repo: 'hpennn/kuaisu-tools', type: 'Cloudflare', port: '', status: 'running', desc: '在线工具合集' },
+    { id: 'ocr-tool', name: 'OCR识别工具', domain: 'ocr.hpenn.xyz', repo: 'hpennn/ocr-tool', type: 'Cloudflare', port: '', status: 'running', desc: 'AI图片文字识别' },
+    { id: 'ai-nav', name: 'AI导航站', domain: 'www.hpennn.online', repo: 'hpennn/ai-nav', type: 'Cloudflare', port: '', status: 'running', desc: 'AI工具导航聚合' },
+    { id: 'ai-resume', name: 'AI简历生成', domain: 'resume.hpenn.xyz', repo: 'hpennn/ai-resume', type: 'Cloudflare', port: '', status: 'running', desc: 'AI驱动简历制作' },
+    { id: 'image-tools', name: '图片处理工具', domain: 'www.kuaisutupo.xyz', repo: 'hpennn/image-tools', type: 'Cloudflare', port: '', status: 'running', desc: '图片压缩/格式转换/裁剪' },
+    { id: 'doc-summary', name: '文档摘要工具', domain: 'doc.hpenn.xyz', repo: 'hpennn/doc-summary', type: 'Cloudflare', port: '', status: 'running', desc: 'PDF/Word文档智能摘要' },
+    { id: 'text-tools', name: '文本处理工具', domain: 'www.hpenn.xyz', repo: 'hpennn/text-tools', type: 'Cloudflare', port: '', status: 'running', desc: '文本转换/格式化/分析' },
+    { id: 'doc-convert', name: '文档格式转换', domain: 'convert.hpenn.xyz', repo: 'hpennn/doc-convert', type: 'Cloudflare', port: '', status: 'running', desc: 'PDF/Word/Excel格式互转' },
+    { id: 'dev-tools', name: '开发者工具集', domain: 'www.hpennn.xyz', repo: 'hpennn/dev-tools', type: 'Cloudflare', port: '', status: 'running', desc: 'JSON格式化/Base64/正则测试等' },
+    { id: 'table-gen', name: '表格生成器', domain: 'table.hpenn.xyz', repo: 'hpennn/table-gen', type: 'Cloudflare', port: '', status: 'running', desc: 'AI生成表格/数据转换' },
+    { id: 'ai-blessing', name: 'AI祝福语', domain: 'www.zhinenti.vip', repo: 'hpennn/ai-blessing', type: 'Cloudflare', port: '', status: 'running', desc: 'AI生成个性化祝福语' },
+    { id: 'ai-copywriter', name: 'AI文案写手', domain: 'www.zhinenti.xyz', repo: 'hpennn/ai-copywriter', type: 'Cloudflare', port: '', status: 'running', desc: 'AI营销文案生成' },
+    { id: 'batch-img-edit', name: '批量图片编辑', domain: 'imgedit.hpenn.xyz', repo: 'hpennn/batch-img-edit', type: 'Cloudflare', port: '', status: 'running', desc: '批量水印/裁剪/压缩' },
+    { id: 'ai-naming', name: 'AI起名助手', domain: 'www.hpenn.online', repo: 'hpennn/ai-naming', type: 'Cloudflare', port: '', status: 'running', desc: 'AI智能取名' },
+    { id: 'ai-content-tools', name: 'AI内容工具', domain: 'content.hpennn.xyz', repo: 'hpennn/ai-content-tools', type: 'Cloudflare', port: '', status: 'running', desc: '内容创作/改写/翻译' },
+    { id: 'ai-marketing-tools', name: 'AI营销工具', domain: 'marketing.hpennn.xyz', repo: 'hpennn/ai-marketing-tools', type: 'Cloudflare', port: '', status: 'running', desc: '营销策略/SEO/社媒管理' },
+    { id: 'ai-ppt-report', name: 'AI PPT报告', domain: 'ppt.hpennn.xyz', repo: 'hpennn/ai-ppt-report', type: 'Cloudflare', port: '', status: 'running', desc: 'AI生成PPT/报告' },
+    { id: 'social-publisher', name: '社媒发布器', domain: 'publish.hpennn.xyz', repo: 'hpennn/social-publisher', type: 'Cloudflare', port: '', status: 'running', desc: '多平台内容一键发布' },
+    { id: 'smart-marketing', name: '智慧营销', domain: 'smart.hpennn.xyz', repo: 'hpennn/smart-marketing', type: 'Cloudflare', port: '', status: 'running', desc: '智能营销自动化' }
 ];
 
 const AGENT_ICONS = ['🧠','📝','📊','✨','💻','🌐','🎨','🔬','📚','🎯','⚡','🛡️','🔧','📱','🎬','🏗️','🧪','📮','🔍','🤖','👨\u200d💼','👩\u200d💼','🦊','🐱','🐶','🦉','🚀','💡','🎵','🌟'];
@@ -784,6 +839,7 @@ function init() {
     renderCustomSlots();
     renderTaskList();
     renderAgentsGrid();
+    renderProjectsGrid();
     loadSkillHistory();
     updateUsageCount();
     checkAuth(); // Check login state and update UI
@@ -1296,12 +1352,152 @@ function renderTaskList() {
 
 // ===== 工具 =====
 function loadSkillHistory() { try { skillHistory = JSON.parse(localStorage.getItem('ai_skill_history') || '{}'); } catch(e) { skillHistory = {}; } }
+// ===== 项目渲染 =====
+let currentProjectFilter = 'all';
+
+function filterProjects(type) {
+    currentProjectFilter = type;
+    ['all','Docker','Cloudflare'].forEach(t => {
+        const btn = document.getElementById('filter-' + t);
+        if (t === type) {
+            btn.className = 'text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-500 font-medium';
+        } else {
+            btn.className = 'text-[10px] px-2 py-0.5 rounded-full bg-slate-50 text-slate-400 font-medium';
+        }
+    });
+    renderProjectsGrid();
+}
+
+function renderProjectsGrid() {
+    const grid = document.getElementById('projects-grid');
+    const stats = document.getElementById('project-stats');
+    const countEl = document.getElementById('project-count');
+    
+    const total = PROJECTS.length;
+    const running = PROJECTS.filter(p => p.status === 'running').length;
+    const dockerCount = PROJECTS.filter(p => p.type === 'Docker').length;
+    const cfCount = PROJECTS.filter(p => p.type === 'Cloudflare').length;
+    
+    countEl.textContent = total + '个项目';
+    
+    stats.innerHTML = `
+        <div class="bg-white rounded-xl border border-slate-100 p-3 text-center">
+            <p class="text-lg font-bold text-slate-800">${total}</p>
+            <p class="text-[10px] text-slate-400">总项目</p>
+        </div>
+        <div class="bg-white rounded-xl border border-emerald-100 p-3 text-center">
+            <p class="text-lg font-bold text-emerald-600">${running}</p>
+            <p class="text-[10px] text-slate-400">运行中</p>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-100 p-3 text-center">
+            <p class="text-lg font-bold text-blue-600">${dockerCount}</p>
+            <p class="text-[10px] text-slate-400">Docker</p>
+        </div>
+    `;
+    
+    const filtered = currentProjectFilter === 'all' ? PROJECTS : PROJECTS.filter(p => p.type === currentProjectFilter);
+    
+    grid.innerHTML = filtered.map(p => {
+        const borderColor = p.type === 'Docker' ? 'border-l-blue-500' : 'border-l-orange-400';
+        const tagColor = p.type === 'Docker' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600';
+        const statusColor = p.status === 'running' ? 'bg-emerald-400' : 'bg-slate-300';
+        const bottomText = p.type === 'Docker' ? (p.port || '') : 'Cloudflare托管';
+        return `
+        <div class="skill-card bg-white rounded-2xl border border-slate-100 border-l-4 ${borderColor} p-3.5 cursor-pointer hover:shadow-lg hover:shadow-slate-100/80 relative overflow-hidden" onclick="openProjectDetail('${p.id}')">
+            <div class="flex items-start justify-between mb-2">
+                <h3 class="text-sm font-semibold text-slate-800 truncate pr-1">${p.name}</h3>
+                <span class="w-2 h-2 rounded-full ${statusColor} flex-shrink-0 mt-1 ${p.status === 'running' ? 'animate-pulse' : ''}"></span>
+            </div>
+            <p class="text-[11px] text-slate-400 truncate mb-2">${p.domain}</p>
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] px-1.5 py-0.5 rounded-full font-medium ${tagColor}">${p.type}</span>
+                <span class="text-[9px] text-slate-300">${bottomText}</span>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function openProjectDetail(id) {
+    const p = PROJECTS.find(x => x.id === id);
+    if (!p) return;
+    
+    const borderColor = p.type === 'Docker' ? 'border-l-blue-500' : 'border-l-orange-400';
+    const tagColor = p.type === 'Docker' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600';
+    const deployCmd = p.type === 'Docker' 
+        ? `cd /www/wwwroot/${p.id} && git pull && docker-compose up -d --build`
+        : `cd /www/wwwroot/${p.id} && npm run build && npx wrangler pages deploy dist`;
+    
+    const modal = document.createElement('div');
+    modal.id = 'project-detail-modal';
+    modal.className = 'modal-overlay active';
+    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center ${p.type === 'Docker' ? 'bg-blue-50' : 'bg-orange-50'}">
+                            <svg class="w-5 h-5 ${p.type === 'Docker' ? 'text-blue-500' : 'text-orange-500'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-slate-800">${p.name}</h2>
+                            <p class="text-xs text-slate-400">${p.domain}</p>
+                        </div>
+                    </div>
+                    <button onclick="document.getElementById('project-detail-modal').remove()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                
+                <p class="text-sm text-slate-600 mb-4">${p.desc}</p>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 p-3 bg-slate-50 rounded-xl">
+                        <span class="text-[10px] font-semibold text-slate-400 w-14">类型</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full font-medium ${tagColor}">${p.type}</span>
+                        <span class="w-2 h-2 rounded-full ${p.status === 'running' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-300'}"></span>
+                        <span class="text-[10px] text-slate-400">${p.status === 'running' ? '运行中' : '已停止'}</span>
+                    </div>
+                    ${p.port ? `
+                    <div class="flex items-center gap-2 p-3 bg-slate-50 rounded-xl">
+                        <span class="text-[10px] font-semibold text-slate-400 w-14">端口</span>
+                        <span class="text-xs text-slate-700 font-mono">${p.port}</span>
+                    </div>` : ''}
+                    ${p.dockerName ? `
+                    <div class="flex items-center gap-2 p-3 bg-slate-50 rounded-xl">
+                        <span class="text-[10px] font-semibold text-slate-400 w-14">容器</span>
+                        <span class="text-xs text-slate-700 font-mono">${p.dockerName}</span>
+                    </div>` : ''}
+                    <div class="flex items-center gap-2 p-3 bg-slate-50 rounded-xl">
+                        <span class="text-[10px] font-semibold text-slate-400 w-14">仓库</span>
+                        <a href="https://github.com/${p.repo}" target="_blank" class="text-xs text-indigo-500 hover:underline">${p.repo}</a>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[10px] font-semibold text-slate-400">部署命令</span>
+                            <button onclick="navigator.clipboard.writeText('${deployCmd}').then(()=>showToast('已复制'))" class="text-[10px] text-indigo-500 hover:text-indigo-600 font-medium px-2 py-0.5 rounded-full hover:bg-indigo-50 transition-all">复制</button>
+                        </div>
+                        <code class="text-[11px] text-slate-700 font-mono break-all leading-relaxed">${deployCmd}</code>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-slate-100 px-5 py-3 flex justify-end">
+                <button onclick="document.getElementById('project-detail-modal').remove()" class="text-sm text-slate-500 hover:text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-50 transition-all">关闭</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
 function navigateTo(tab) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + tab).classList.add('active');
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     if (tab === 'tasks') renderTaskList();
     if (tab === 'agents') renderAgentsGrid();
+    if (tab === 'projects') renderProjectsGrid();
     if (tab === 'profile') fetchCredits();
 }
 function addCustomSlot(i) { showToast('自定义技能功能即将上线'); }
