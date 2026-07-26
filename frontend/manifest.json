@@ -1,6 +1,6 @@
 {
-  "name": "Deploy Easy",
-  "short_name": "Deploy Easy",
+  "name": "智能部署助手",
+  "short_name": "智能部署助手",
   "description": "AI自动化部署助手 - 一键生成Docker/Nginx/部署配置",
   "start_url": "/",
   "scope": "/",
