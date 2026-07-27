@@ -1472,6 +1472,9 @@ export default {
       const q = this.userSearchQuery.toLowerCase()
       return this.adminUsers.filter(u => u.user_id.toLowerCase().includes(q))
     },
+    currentSkillMeta() {
+      return this.configSkills.find(s => s.id === this.selectedSkill) || {}
+    },
     // Old subscription computed properties removed
   },
   watch: {
@@ -1516,9 +1519,7 @@ export default {
       this.skillResult = ''
       this.skillInputText = ''
     },
-    get currentSkillMeta() {
-      return this.configSkills.find(s => s.id === this.selectedSkill) || {}
-    },
+
     async executeSkill() {
       if (!this.skillInputText.trim()) {
         this.$message.warning('请输入描述信息')
