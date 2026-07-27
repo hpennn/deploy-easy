@@ -1,33 +1,1195 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/icons/icon-192.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
-    <link rel="stylesheet" href="https://unpkg.com/element-plus/theme-chalk/dark/css-vars.css" />
-    <link rel="manifest" href="/manifest.json">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0d1117">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>智能部署助手</title>
-    <script type="module" crossorigin src="/src/main.js"></script>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="智能部署助手">
+    <meta name="apple-mobile-web-app-title" content="智能部署助手">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png">
+    <meta name="msapplication-TileImage" content="/icons/icon-144.png">
+    <meta name="msapplication-TileColor" content="#0d1117">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { 50:'#161b22', 100:'#21262d', 200:'#30363d', 300:'#484f58', 400:'#6e7681', 500:'#8b949e', 600:'#c9d1d9', 700:'#e6edf3', bg:'#0d1117' },
+            accent: { blue:'#58a6ff', green:'#3fb950', orange:'#d29922', purple:'#bc8cff', red:'#f85149', pink:'#f778ba' }
+          }
+        }
+      }
+    }
+    </script>
     <style>
-      #app-loading { display:flex; align-items:center; justify-content:center; height:100vh; background:#0d1117; color:#c9d1d9; font-family:-apple-system,sans-serif; font-size:14px; }
-      #app-loading .spinner { width:24px; height:24px; border:3px solid #30363d; border-top-color:#58a6ff; border-radius:50%; animation:spin 0.8s linear infinite; margin-right:12px; }
-      @keyframes spin { to { transform:rotate(360deg); } }
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    body { margin:0; padding:0; background:#0d1117; color:#e6edf3; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+    input, textarea, select { background:#161b22; color:#e6edf3; border:1px solid #30363d; border-radius:8px; padding:10px 14px; font-size:14px; outline:none; transition:border-color .2s; }
+    input:focus, textarea:focus, select:focus { border-color:#58a6ff; }
+    input::placeholder, textarea::placeholder { color:#6e7681; }
+    button { cursor:pointer; transition:all .2s; }
+    .page { display:none; flex-direction:column; min-height:100vh; padding-bottom:70px; }
+    .page.active { display:flex; }
+    .sub-page { display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:50; background:#0d1117; flex-direction:column; overflow-y:auto; }
+    .sub-page.active { display:flex; }
+    .card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px; transition:all .2s; cursor:pointer; }
+    .card:hover { border-color:#58a6ff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(88,166,255,.15); }
+    .card:active { transform:scale(.97); }
+    .btn-primary { background:linear-gradient(135deg,#238636,#2ea043); color:#fff; border:none; padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; }
+    .btn-primary:hover { background:linear-gradient(135deg,#2ea043,#3fb950); }
+    .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+    .btn-secondary { background:#21262d; color:#c9d1d9; border:1px solid #30363d; padding:10px 20px; border-radius:8px; font-size:14px; }
+    .btn-secondary:hover { background:#30363d; color:#e6edf3; }
+    .btn-danger { background:linear-gradient(135deg,#da3633,#f85149); color:#fff; border:none; padding:10px 20px; border-radius:8px; font-size:14px; }
+    .btn-sm { padding:6px 12px; font-size:12px; }
+    .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; padding:10px 20px; border-radius:8px; font-size:14px; animation:fadeIn .3s ease; pointer-events:none; }
+    @keyframes fadeIn { from{opacity:0;transform:translateX(-50%) translateY(-10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+    @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+    .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.6); z-index:80; display:flex; align-items:flex-end; justify-content:center; }
+    .modal-body { background:#161b22; border:1px solid #30363d; border-radius:16px 16px 0 0; width:100%; max-width:480px; max-height:85vh; overflow-y:auto; animation:slideUp .3s ease; padding:20px; }
+    .tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+    .tag-green { background:rgba(63,185,80,.15); color:#3fb950; }
+    .tag-blue { background:rgba(88,166,255,.15); color:#58a6ff; }
+    .tag-orange { background:rgba(210,153,34,.15); color:#d29922; }
+    .tag-red { background:rgba(248,81,73,.15); color:#f85149; }
+    .tag-purple { background:rgba(188,140,255,.15); color:#bc8cff; }
+    .tag-gray { background:rgba(139,148,158,.15); color:#8b949e; }
+    .spinner { display:inline-block; width:16px; height:16px; border:2px solid #30363d; border-top-color:#58a6ff; border-radius:50%; animation:spin .6s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .code-block { background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:12px; font-family:'Fira Code',monospace; font-size:12px; overflow-x:auto; white-space:pre-wrap; word-break:break-all; line-height:1.5; color:#c9d1d9; max-height:400px; overflow-y:auto; }
+    select option { background:#161b22; color:#e6edf3; }
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background:#0d1117; }
+    ::-webkit-scrollbar-thumb { background:#30363d; border-radius:3px; }
+    ::-webkit-scrollbar-thumb:hover { background:#484f58; }
     </style>
-  </head>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+</head>
+<body>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- ==================== 工作台 Page ==================== -->
+<div id="page-home" class="page active">
+  <div class="px-4 pt-4 pb-2 flex items-center justify-between">
+    <div class="flex items-center gap-2" id="logo-area">
+      <span class="text-2xl">🚀</span>
+      <h1 class="text-lg font-bold text-dark-700">智能部署助手</h1>
+      <span class="tag tag-blue">v3.0</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="credits-badge" class="tag tag-orange cursor-pointer" onclick="showPaymentModal()">💎 <span id="credits-val">0</span></span>
+      <span id="user-badge" class="tag tag-blue cursor-pointer" onclick="showProfileModal()"></span>
+    </div>
+  </div>
+  <!-- Quick Stats -->
+  <div class="px-4 py-2 grid grid-cols-3 gap-3">
+    <div class="card text-center !cursor-default">
+      <div class="text-2xl font-bold text-accent-green" id="stat-projects">0</div>
+      <div class="text-xs text-dark-500 mt-1">项目总数</div>
+    </div>
+    <div class="card text-center !cursor-default">
+      <div class="text-2xl font-bold text-accent-blue" id="stat-deploys">0</div>
+      <div class="text-xs text-dark-500 mt-1">部署次数</div>
+    </div>
+    <div class="card text-center !cursor-default">
+      <div class="text-2xl font-bold text-accent-orange" id="stat-fixes">0</div>
+      <div class="text-xs text-dark-500 mt-1">修复次数</div>
+    </div>
+  </div>
+  <!-- Feature Cards -->
+  <div class="px-4 py-2">
+    <h2 class="text-sm font-semibold text-dark-500 mb-3">⚡ 快捷功能</h2>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="card flex flex-col items-center gap-2" onclick="switchTab('deploy')">
+        <span class="text-3xl">🚀</span>
+        <span class="text-sm font-semibold">免费部署</span>
+        <span class="text-xs text-dark-500">一键生成部署脚本</span>
+      </div>
+      <div class="card flex flex-col items-center gap-2" onclick="switchTab('deploy');showSubPage('sub-generate')">
+        <span class="text-3xl">✨</span>
+        <span class="text-sm font-semibold">生成项目</span>
+        <span class="text-xs text-dark-500">AI 生成完整项目代码</span>
+      </div>
+      <div class="card flex flex-col items-center gap-2" onclick="switchTab('detect')">
+        <span class="text-3xl">🔧</span>
+        <span class="text-sm font-semibold">代码检测</span>
+        <span class="text-xs text-dark-500">发现并修复代码问题</span>
+      </div>
+      <div class="card flex flex-col items-center gap-2" onclick="switchTab('deploy');showSubPage('sub-editcode')">
+        <span class="text-3xl">🛠</span>
+        <span class="text-sm font-semibold">代码修改</span>
+        <span class="text-xs text-dark-500">AI 修改项目代码</span>
+      </div>
+      <div class="card flex flex-col items-center gap-2" onclick="switchTab('deploy');showSubPage('sub-projects')">
+        <span class="text-3xl">📦</span>
+        <span class="text-sm font-semibold">项目中心</span>
+        <span class="text-xs text-dark-500">查看管理所有项目</span>
+      </div>
+      <div class="card flex flex-col items-center gap-2" onclick="switchTab('deploy');showSubPage('sub-skills')">
+        <span class="text-3xl">⚙️</span>
+        <span class="text-sm font-semibold">配置生成</span>
+        <span class="text-xs text-dark-500">Docker/Nginx/CI/CD</span>
+      </div>
+    </div>
+  </div>
+  <!-- Recent Activity -->
+  <div class="px-4 py-2">
+    <h2 class="text-sm font-semibold text-dark-500 mb-3">📋 最近活动</h2>
+    <div id="recent-activity" class="space-y-2">
+      <div class="text-xs text-dark-400 text-center py-4">暂无活动记录</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 部署 Page ==================== -->
+<div id="page-deploy" class="page">
+  <div class="px-4 pt-4 pb-2">
+    <h1 class="text-lg font-bold">🚀 免费部署</h1>
+  </div>
+  <!-- Usage Guide -->
+  <div class="px-4 mb-3">
+    <div class="card" onclick="this.querySelector('.guide-body').classList.toggle('hidden')">
+      <div class="flex items-center gap-2">
+        <span>📖</span><span class="text-sm font-semibold">使用说明</span>
+        <span class="ml-auto text-dark-400">▼</span>
+      </div>
+      <div class="guide-body hidden mt-3 text-xs text-dark-500 space-y-2">
+        <p><span class="tag tag-green">1</span> 输入项目路径或上传 ZIP</p>
+        <p><span class="tag tag-green">2</span> 系统自动识别项目类型</p>
+        <p><span class="tag tag-green">3</span> 选择部署方式</p>
+        <p><span class="tag tag-green">4</span> 一键生成并执行部署</p>
+      </div>
+    </div>
+  </div>
+  <!-- Deploy Mode -->
+  <div class="px-4 mb-3">
+    <div class="grid grid-cols-2 gap-3">
+      <div class="card text-center" id="deploy-mode-upload" onclick="setDeployMode('upload')">
+        <span class="text-2xl">📤</span>
+        <div class="text-sm font-semibold mt-1">上传项目</div>
+        <div class="text-xs text-dark-500">上传ZIP自动识别</div>
+      </div>
+      <div class="card text-center border-accent-blue" id="deploy-mode-server" onclick="setDeployMode('server')">
+        <span class="text-2xl">🖥️</span>
+        <div class="text-sm font-semibold mt-1">连接服务器</div>
+        <div class="text-xs text-dark-500">SSH连接检测部署</div>
+      </div>
+    </div>
+  </div>
+  <!-- Server Connection Section -->
+  <div id="deploy-server-section" class="px-4 space-y-3">
+    <div class="card" id="ssh-form-card">
+      <h3 class="text-sm font-semibold mb-3">🔗 服务器连接</h3>
+      <div class="space-y-2">
+        <div class="flex gap-2">
+          <input id="ssh-host" placeholder="服务器IP" class="flex-1">
+          <input id="ssh-port" placeholder="22" value="22" class="w-16 text-center">
+        </div>
+        <div class="flex gap-2">
+          <input id="ssh-username" placeholder="root" value="root" class="flex-1">
+          <input id="ssh-password" type="password" placeholder="密码" class="flex-1">
+        </div>
+        <button id="ssh-connect-btn" class="btn-primary w-full" onclick="connectServer()">连接服务器</button>
+      </div>
+    </div>
+    <div class="card hidden" id="ssh-connected-card">
+      <div class="flex items-center gap-2">
+        <span class="tag tag-green">已连接</span>
+        <span class="text-sm text-dark-600" id="ssh-host-info"></span>
+        <button class="btn-danger btn-sm ml-auto" onclick="disconnectServer()">断开</button>
+      </div>
+    </div>
+    <div id="deploy-path-section" class="hidden">
+      <div class="card">
+        <h3 class="text-sm font-semibold mb-2">📁 项目路径</h3>
+        <div class="flex gap-2 mb-2">
+          <select id="path-select" class="flex-1" onchange="onPathSelect(this.value)">
+            <option value="">选择远程项目目录</option>
+          </select>
+          <button class="btn-secondary btn-sm" onclick="scanRemotePaths()">刷新</button>
+        </div>
+        <div class="flex gap-2">
+          <input id="project-path" placeholder="/www/wwwroot/..." class="flex-1">
+          <button class="btn-primary btn-sm" onclick="detectProject()" id="detect-btn">🔍 检测</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Upload Section -->
+  <div id="deploy-upload-section" class="px-4 space-y-3 hidden">
+    <div class="card">
+      <div class="border-2 border-dashed border-dark-200 rounded-lg p-6 text-center cursor-pointer" onclick="document.getElementById('deploy-zip-input').click()">
+        <span class="text-3xl">📦</span>
+        <div class="text-sm mt-2">点击选择 ZIP 文件</div>
+        <div class="text-xs text-dark-500 mt-1">支持 .zip 格式，最大 20MB</div>
+      </div>
+      <input type="file" accept=".zip" class="hidden" id="deploy-zip-input" onchange="handleDeployZipSelect(this)">
+      <div id="deploy-file-info" class="hidden mt-2 text-sm text-dark-500"></div>
+      <button class="btn-primary w-full mt-3" onclick="detectUploadedProject()" id="detect-upload-btn" disabled>🔍 检测项目</button>
+    </div>
+  </div>
+  <!-- Project Info -->
+  <div id="project-info-section" class="px-4 mt-3 hidden">
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-2">✅ 项目信息</h3>
+      <div id="project-info-content" class="text-sm space-y-1"></div>
+    </div>
+  </div>
+  <!-- Deploy Options -->
+  <div id="deploy-options-section" class="px-4 mt-3 hidden">
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-3">🎯 部署方式</h3>
+      <div class="grid grid-cols-2 gap-2 mb-3" id="deploy-type-grid">
+        <div class="card text-center !p-2 deploy-type-card active" onclick="setDeployType('local')" data-type="local">📝 本地脚本</div>
+        <div class="card text-center !p-2 deploy-type-card" onclick="setDeployType('server')" data-type="server">🖥️ 云服务器</div>
+        <div class="card text-center !p-2 deploy-type-card" onclick="setDeployType('cloudflare')" data-type="cloudflare">☁️ Cloudflare</div>
+        <div class="card text-center !p-2 deploy-type-card" onclick="setDeployType('docker')" data-type="docker">🐳 Docker</div>
+      </div>
+      <input id="deploy-domain" placeholder="域名（可选）" class="w-full mb-2">
+      <button class="btn-primary w-full" onclick="generateScript()" id="generate-btn">🚀 生成部署脚本</button>
+    </div>
+  </div>
+  <!-- Script Output -->
+  <div id="script-output-section" class="px-4 mt-3 hidden">
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-2">📜 部署脚本</h3>
+      <div class="code-block" id="script-output-content"></div>
+      <div class="flex gap-2 mt-3">
+        <button class="btn-secondary flex-1" onclick="copyScript()">📋 复制</button>
+        <button class="btn-secondary flex-1" onclick="downloadScript()">⬇️ 下载</button>
+        <button class="btn-primary flex-1" onclick="startRemoteDeploy()" id="remote-deploy-btn">🚀 远程部署</button>
+      </div>
+    </div>
+  </div>
+  <!-- Remote Deploy Log -->
+  <div id="remote-deploy-section" class="px-4 mt-3 hidden">
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-2">📡 远程部署日志</h3>
+      <div class="code-block min-h-[100px]" id="remote-log-content"></div>
+      <div id="remote-deploy-status" class="mt-2 text-sm"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 检测 Page ==================== -->
+<div id="page-detect" class="page">
+  <div class="px-4 pt-4 pb-2">
+    <h1 class="text-lg font-bold">🔧 代码检测</h1>
+  </div>
+  <div class="px-4 mb-3">
+    <div class="grid grid-cols-2 gap-3">
+      <div class="card text-center" id="fix-mode-upload" onclick="setFixMode('upload')">
+        <span class="text-2xl">📤</span>
+        <div class="text-sm font-semibold mt-1">上传项目</div>
+      </div>
+      <div class="card text-center border-accent-blue" id="fix-mode-remote" onclick="setFixMode('remote')">
+        <span class="text-2xl">🖥️</span>
+        <div class="text-sm font-semibold mt-1">远程检测</div>
+      </div>
+    </div>
+  </div>
+  <div id="fix-upload-section" class="px-4 space-y-3">
+    <div class="card">
+      <div class="border-2 border-dashed border-dark-200 rounded-lg p-6 text-center cursor-pointer" onclick="document.getElementById('fix-zip-input').click()">
+        <span class="text-3xl">📦</span>
+        <div class="text-sm mt-2">上传项目 ZIP</div>
+        <div class="text-xs text-dark-500 mt-1">最大 10MB</div>
+      </div>
+      <input type="file" accept=".zip" class="hidden" id="fix-zip-input" onchange="handleFixZipSelect(this)">
+      <div id="fix-file-info" class="hidden mt-2 text-sm text-dark-500"></div>
+      <button class="btn-primary w-full mt-3" onclick="analyzeUploadedCode()" id="analyze-upload-btn" disabled>🔍 开始检测</button>
+    </div>
+  </div>
+  <div id="fix-remote-section" class="px-4 space-y-3 hidden">
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-2">🖥️ 远程项目</h3>
+      <div class="flex gap-2 mb-2">
+        <select id="fix-server-select" class="flex-1"><option value="">选择服务器</option></select>
+      </div>
+      <input id="fix-project-path" placeholder="项目路径 /www/wwwroot/..." class="w-full mb-2">
+      <button class="btn-primary w-full" onclick="analyzeRemoteCode()" id="analyze-remote-btn">🔍 开始检测</button>
+    </div>
+  </div>
+  <div id="analysis-result-section" class="px-4 mt-3 hidden">
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-2">📊 检测结果</h3>
+      <div id="analysis-summary" class="text-sm mb-3"></div>
+      <div id="analysis-errors" class="space-y-2"></div>
+      <div class="flex gap-2 mt-3">
+        <button class="btn-secondary flex-1" onclick="selectAllErrors()">全选</button>
+        <button class="btn-primary flex-1" onclick="repairErrors()">🛠 AI 修复</button>
+      </div>
+    </div>
+  </div>
+  <div id="repair-result-section" class="px-4 mt-3 hidden">
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-2">✅ 修复结果</h3>
+      <div id="repair-results-content" class="space-y-2"></div>
+      <button class="btn-primary w-full mt-3" onclick="downloadRepairedZip()">⬇️ 下载修复后项目</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 我的 Page ==================== -->
+<div id="page-profile" class="page">
+  <div class="px-4 pt-4 pb-2">
+    <h1 class="text-lg font-bold">👤 我的</h1>
+  </div>
+  <div class="px-4 space-y-3">
+    <div class="card">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 rounded-full bg-accent-blue/20 flex items-center justify-center text-xl font-bold text-accent-blue" id="profile-avatar">?</div>
+        <div>
+          <div class="text-sm font-semibold" id="profile-name">未登录</div>
+          <div class="text-xs text-dark-500" id="profile-id"></div>
+        </div>
+      </div>
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between"><span class="text-dark-500">积分余额</span><span class="text-accent-orange font-bold" id="profile-credits">💎 0</span></div>
+        <div class="flex justify-between"><span class="text-dark-500">账户状态</span><span id="profile-status" class="tag tag-gray">免费</span></div>
+        <div class="flex justify-between"><span class="text-dark-500">注册时间</span><span class="text-dark-400" id="profile-created">-</span></div>
+      </div>
+      <div class="mt-4 space-y-2">
+        <button class="btn-primary w-full" onclick="showPaymentModal()">💎 充值积分</button>
+        <button id="login-btn" class="btn-secondary w-full" onclick="showLoginModal()">🔑 登录 / 注册</button>
+        <button id="logout-btn" class="btn-danger w-full hidden" onclick="handleLogout()">退出登录</button>
+      </div>
+    </div>
+    <div class="card" onclick="showSubPage('sub-projects')">
+      <div class="flex items-center gap-2"><span>📦</span><span class="text-sm">项目中心</span><span class="ml-auto text-dark-400">›</span></div>
+    </div>
+    <div class="card" onclick="showSubPage('sub-skills')">
+      <div class="flex items-center gap-2"><span>⚙️</span><span class="text-sm">配置生成</span><span class="ml-auto text-dark-400">›</span></div>
+    </div>
+    <div class="card" id="admin-entry" style="display:none" onclick="showSubPage('sub-admin')">
+      <div class="flex items-center gap-2"><span>🛡️</span><span class="text-sm">管理后台</span><span class="ml-auto text-dark-400">›</span></div>
+    </div>
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-3">💰 积分套餐</h3>
+      <div class="grid grid-cols-2 gap-2" id="credit-packages"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Sub Pages ==================== -->
+<div id="sub-generate" class="sub-page">
+  <div class="px-4 pt-4 flex items-center gap-2">
+    <button class="btn-secondary btn-sm" onclick="hideSubPage('sub-generate')">← 返回</button>
+    <h2 class="text-sm font-semibold">✨ 生成项目</h2>
+  </div>
+  <div class="px-4 py-3 space-y-3 flex-1 overflow-y-auto">
+    <textarea id="gen-description" placeholder="描述你想生成的项目..." rows="3" class="w-full"></textarea>
+    <div class="flex gap-2">
+      <select id="gen-project-type" class="flex-1" onchange="onGenTypeChange()">
+        <option value="frontend">前端项目</option>
+        <option value="backend">后端项目</option>
+        <option value="fullstack">全栈项目</option>
+      </select>
+      <select id="gen-tech-stack" class="flex-1"></select>
+    </div>
+    <button class="btn-primary w-full" onclick="generateProject()" id="gen-btn">✨ AI 生成项目</button>
+    <div id="gen-result-section" class="hidden">
+      <h3 class="text-sm font-semibold mb-2">📁 生成结果</h3>
+      <div id="gen-files-list" class="space-y-1"></div>
+      <div id="gen-file-content" class="code-block mt-2"></div>
+      <div class="flex gap-2 mt-2">
+        <button class="btn-secondary flex-1" onclick="copyGenFile()">📋 复制</button>
+        <button class="btn-primary flex-1" onclick="downloadGenProject()">⬇️ 下载ZIP</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="sub-editcode" class="sub-page">
+  <div class="px-4 pt-4 flex items-center gap-2">
+    <button class="btn-secondary btn-sm" onclick="hideSubPage('sub-editcode')">← 返回</button>
+    <h2 class="text-sm font-semibold">🛠 代码修改</h2>
+  </div>
+  <div class="px-4 py-3 space-y-3 flex-1 overflow-y-auto">
+    <div class="card">
+      <div class="border-2 border-dashed border-dark-200 rounded-lg p-6 text-center cursor-pointer" onclick="document.getElementById('edit-zip-input').click()">
+        <span class="text-3xl">📦</span>
+        <div class="text-sm mt-2">上传项目源码 ZIP</div>
+        <div class="text-xs text-dark-500 mt-1">最大 5MB</div>
+      </div>
+      <input type="file" accept=".zip" class="hidden" id="edit-zip-input" onchange="handleEditZipSelect(this)">
+      <div id="edit-file-info" class="hidden mt-2 text-sm text-dark-500"></div>
+    </div>
+    <textarea id="edit-code-desc" placeholder="描述修改需求..." rows="3" class="w-full"></textarea>
+    <button class="btn-primary w-full" onclick="aiModifyProject()" id="edit-code-btn">🛠 AI 修改代码</button>
+    <div id="edit-result-section" class="hidden">
+      <h3 class="text-sm font-semibold mb-2">📁 修改结果</h3>
+      <div id="edit-files-list" class="space-y-1"></div>
+      <div id="edit-file-content" class="code-block mt-2"></div>
+      <div class="flex gap-2 mt-2">
+        <button class="btn-secondary flex-1" onclick="copyModifiedFile()">📋 复制</button>
+        <button class="btn-primary flex-1" onclick="downloadModifiedZip()">⬇️ 下载ZIP</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="sub-projects" class="sub-page">
+  <div class="px-4 pt-4 flex items-center gap-2">
+    <button class="btn-secondary btn-sm" onclick="hideSubPage('sub-projects')">← 返回</button>
+    <h2 class="text-sm font-semibold">📦 项目中心</h2>
+  </div>
+  <div class="px-4 py-3 flex-1 overflow-y-auto">
+    <div id="projects-list" class="space-y-2"></div>
+  </div>
+</div>
+
+<div id="sub-skills" class="sub-page">
+  <div class="px-4 pt-4 flex items-center gap-2">
+    <button class="btn-secondary btn-sm" onclick="hideSubPage('sub-skills')">← 返回</button>
+    <h2 class="text-sm font-semibold">⚙️ 配置生成</h2>
+  </div>
+  <div class="px-4 py-3 space-y-3 flex-1 overflow-y-auto">
+    <div class="grid grid-cols-2 gap-2" id="skills-grid"></div>
+    <div id="skill-input-section" class="hidden">
+      <h3 class="text-sm font-semibold mb-2" id="skill-title"></h3>
+      <p class="text-xs text-dark-500 mb-2" id="skill-desc"></p>
+      <textarea id="skill-input" rows="4" class="w-full" placeholder="描述你的配置需求..."></textarea>
+      <button class="btn-primary w-full mt-2" onclick="executeSkill()" id="skill-execute-btn">⚡ 生成配置</button>
+    </div>
+    <div id="skill-result-section" class="hidden">
+      <h3 class="text-sm font-semibold mb-2">📋 生成结果</h3>
+      <div class="code-block" id="skill-result-content"></div>
+      <div class="flex gap-2 mt-2">
+        <button class="btn-secondary flex-1" onclick="copySkillResult()">📋 复制</button>
+        <button class="btn-primary flex-1" onclick="downloadSkillResult()">⬇️ 下载</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="sub-admin" class="sub-page">
+  <div class="px-4 pt-4 flex items-center gap-2">
+    <button class="btn-secondary btn-sm" onclick="hideSubPage('sub-admin')">← 返回</button>
+    <h2 class="text-sm font-semibold">🛡️ 管理后台</h2>
+  </div>
+  <div class="px-4 py-3 space-y-3 flex-1 overflow-y-auto">
+    <div class="flex gap-2 overflow-x-auto pb-2">
+      <button class="btn-secondary btn-sm whitespace-nowrap admin-sub-btn" onclick="switchAdminTab('dashboard')">📊 概览</button>
+      <button class="btn-secondary btn-sm whitespace-nowrap admin-sub-btn" onclick="switchAdminTab('users')">👥 用户</button>
+      <button class="btn-secondary btn-sm whitespace-nowrap admin-sub-btn" onclick="switchAdminTab('orders')">💰 订单</button>
+      <button class="btn-secondary btn-sm whitespace-nowrap admin-sub-btn" onclick="switchAdminTab('logs')">📋 日志</button>
+      <button class="btn-secondary btn-sm whitespace-nowrap admin-sub-btn" onclick="switchAdminTab('credits')">💎 积分</button>
+    </div>
+    <div id="admin-dashboard" class="admin-tab-content">
+      <div class="grid grid-cols-3 gap-2 mb-3">
+        <div class="card text-center !cursor-default"><div class="text-lg font-bold text-accent-blue" id="admin-total-users">0</div><div class="text-xs text-dark-500">总用户</div></div>
+        <div class="card text-center !cursor-default"><div class="text-lg font-bold text-accent-green" id="admin-paid-users">0</div><div class="text-xs text-dark-500">付费用户</div></div>
+        <div class="card text-center !cursor-default"><div class="text-lg font-bold text-accent-orange" id="admin-total-income">0</div><div class="text-xs text-dark-500">总收入</div></div>
+      </div>
+    </div>
+    <div id="admin-users" class="admin-tab-content hidden">
+      <input id="admin-user-search" placeholder="搜索用户ID..." class="w-full mb-2" oninput="filterAdminUsers()">
+      <div id="admin-users-list" class="space-y-2"></div>
+    </div>
+    <div id="admin-orders" class="admin-tab-content hidden"><div id="admin-orders-list" class="space-y-2"></div></div>
+    <div id="admin-logs" class="admin-tab-content hidden"><div id="admin-logs-list" class="space-y-2"></div></div>
+    <div id="admin-credits" class="admin-tab-content hidden">
+      <div class="card mb-3">
+        <h3 class="text-sm font-semibold mb-2">手动充值</h3>
+        <input id="admin-credit-uid" placeholder="用户ID" class="w-full mb-2">
+        <input id="admin-credit-amount" type="number" placeholder="积分数量" value="1000" class="w-full mb-2">
+        <input id="admin-credit-desc" placeholder="说明" class="w-full mb-2">
+        <button class="btn-primary w-full" onclick="adminAddCredits()">充值</button>
+      </div>
+      <div id="admin-credit-logs" class="space-y-2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Modals ==================== -->
+<div id="login-modal" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-body">
+    <h3 class="text-base font-semibold mb-4" id="login-modal-title">🔑 登录</h3>
+    <div class="space-y-3">
+      <input id="login-username" placeholder="用户名" class="w-full">
+      <input id="login-password" type="password" placeholder="密码" class="w-full">
+      <input id="login-confirm" type="password" placeholder="确认密码" class="w-full" style="display:none">
+      <button class="btn-primary w-full" onclick="handleLogin()" id="login-submit-btn">登录</button>
+      <div class="text-center text-xs text-dark-500">
+        <span id="login-toggle" class="text-accent-blue cursor-pointer" onclick="toggleLoginMode()">没有账号？去注册</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="payment-modal" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-body">
+    <h3 class="text-base font-semibold mb-4">💎 充值积分</h3>
+    <div class="space-y-3" id="payment-packages"></div>
+    <button class="btn-primary w-full mt-4" onclick="handlePay()" id="pay-btn">💳 立即支付</button>
+  </div>
+</div>
+
+<div id="admin-login-modal" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-body">
+    <h3 class="text-base font-semibold mb-4">🛡️ 管理员验证</h3>
+    <input id="admin-token-input" placeholder="输入管理员Token" class="w-full mb-3">
+    <button class="btn-primary w-full" onclick="verifyAdminToken()">验证</button>
+  </div>
+</div>
+
+<div id="profile-modal" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-body">
+    <h3 class="text-base font-semibold mb-4">👤 个人信息</h3>
+    <div id="profile-modal-content" class="space-y-2 text-sm"></div>
+    <div class="mt-4 space-y-2">
+      <button class="btn-primary w-full" onclick="showPaymentModal()">💎 充值积分</button>
+      <button class="btn-danger w-full" onclick="handleLogout();document.getElementById('profile-modal').classList.add('hidden')">退出登录</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Bottom Tab Bar ==================== -->
+<nav class="fixed bottom-0 left-0 right-0 bg-dark-50 border-t border-dark-200 z-40">
+  <div class="grid grid-cols-4 max-w-lg mx-auto">
+    <button class="tab-btn active flex flex-col items-center py-2 text-xs" onclick="switchTab('home')" data-tab="home">
+      <span class="text-lg">🏠</span><span class="mt-0.5">工作台</span>
+    </button>
+    <button class="tab-btn flex flex-col items-center py-2 text-xs" onclick="switchTab('deploy')" data-tab="deploy">
+      <span class="text-lg">🚀</span><span class="mt-0.5">部署</span>
+    </button>
+    <button class="tab-btn flex flex-col items-center py-2 text-xs" onclick="switchTab('detect')" data-tab="detect">
+      <span class="text-lg">🔧</span><span class="mt-0.5">检测</span>
+    </button>
+    <button class="tab-btn flex flex-col items-center py-2 text-xs" onclick="switchTab('profile')" data-tab="profile">
+      <span class="text-lg">👤</span><span class="mt-0.5">我的</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+// ============ STATE ============
+const S = {
+  userId: localStorage.getItem('user_id') || 'user_' + Math.random().toString(36).slice(2,10),
+  isLoggedIn: !!localStorage.getItem('user_id'),
+  loggedInUsername: localStorage.getItem('logged_in_username') || '',
+  userCredits: 0,
+  isAdmin: false,
+  adminToken: '',
+  activeTab: 'home',
+  loginMode: 'login',
+  sshSessionId: null,
+  sshConnected: false,
+  deployMode: 'server',
+  deployUploadFile: null,
+  deployTempDir: '',
+  projectInfo: null,
+  deployType: 'local',
+  selectedServerIdx: 0,
+  servers: [],
+  scriptOutput: '',
+  scriptFilename: '',
+  extraFiles: [],
+  fixMode: 'remote',
+  fixUploadFile: null,
+  fixTempDir: '',
+  analysisResult: null,
+  selectedErrors: [],
+  repairResults: [],
+  genFiles: [],
+  genSelectedFile: -1,
+  editZipFile: null,
+  editModifyResult: [],
+  editCodeSelectedFile: -1,
+  selectedSkill: '',
+  skillResult: '',
+  selectedPackage: 'pro',
+  adminSubTab: 'dashboard',
+  adminStats: {},
+  adminUsers: [],
+  adminOrders: [],
+  deployLogs: [],
+  creditLogs: [],
+  logoClickCount: 0,
+  deferredPrompt: null,
+};
+
+const CREDIT_PACKAGES = [
+  { key:'starter', label:'体验包', price:9.9, credits:30000, desc:'约60次生成', recommend:false },
+  { key:'basic', label:'基础包', price:29, credits:90000, desc:'约180次生成', recommend:false },
+  { key:'pro', label:'进阶包', price:99, credits:300000, desc:'约600次生成', recommend:true },
+  { key:'ultimate', label:'旗舰包', price:299, credits:900000, desc:'约1800次生成', recommend:false },
+];
+
+const TECH_STACKS = {
+  frontend: { vue3:{label:'Vue 3 + Vite',desc:'Vue 3 组合式 API'}, react:{label:'React 18',desc:'React 18 + Hooks'}, html:{label:'原生HTML/CSS/JS',desc:'无框架依赖'} },
+  backend: { fastapi:{label:'FastAPI',desc:'Python 异步框架'}, flask:{label:'Flask',desc:'Python 轻量级框架'}, express:{label:'Express.js',desc:'Node.js 框架'} },
+  fullstack: { nextjs:{label:'Next.js',desc:'React 全栈框架'}, nuxtjs:{label:'Nuxt.js',desc:'Vue 全栈框架'} },
+};
+
+const CONFIG_SKILLS = [
+  { id:'dockerfile_gen', name:'Dockerfile生成', icon:'🐳', description:'根据应用描述生成优化的多阶段Dockerfile', placeholder:'描述你的应用...' },
+  { id:'docker_compose', name:'Docker Compose', icon:'🐳', description:'生成完整的docker-compose.yml编排配置', placeholder:'描述多容器架构...' },
+  { id:'nginx_config', name:'Nginx配置', icon:'🌐', description:'生成Nginx反向代理、SSL配置', placeholder:'描述Nginx需求...' },
+  { id:'deploy_script', name:'部署脚本', icon:'🚀', description:'生成自动化部署Shell脚本', placeholder:'描述部署需求...' },
+  { id:'env_config', name:'环境变量', icon:'🔑', description:'生成环境变量模板', placeholder:'描述环境变量需求...' },
+  { id:'ssl_setup', name:'SSL证书', icon:'🔒', description:'生成SSL证书配置', placeholder:'描述SSL需求...' },
+  { id:'ci_cd', name:'CI/CD流水线', icon:'🔄', description:'生成GitHub Actions配置', placeholder:'描述CI/CD需求...' },
+  { id:'db_setup', name:'数据库配置', icon:'🗄️', description:'生成数据库初始化SQL', placeholder:'描述数据库需求...' },
+];
+
+const PROJECTS_DATA = [
+  { id:'ai-staff', name:'AI智能体工作台', domain:'www.zhinenti.cn', type:'Docker', status:'running' },
+  { id:'ai-auto-deploy', name:'AI自动部署', domain:'auto.zhinenti.cn', type:'Docker', status:'running' },
+  { id:'deploy-easy', name:'智能部署助手', domain:'deploy.zhinenti.cn', type:'Docker', status:'running' },
+  { id:'marketing-craft', name:'智能营销助手', domain:'craft.zhinenti.cn', type:'Docker', status:'running' },
+  { id:'ecom-bot', name:'电商客服机器人', domain:'zhinenti.cn:8000', type:'Docker', status:'running' },
+  { id:'kuaisu-tools', name:'快速工具箱', domain:'www.kuaisu.online', type:'Cloudflare', status:'running' },
+  { id:'ocr-tool', name:'OCR识别工具', domain:'ocr.hpenn.xyz', type:'Cloudflare', status:'running' },
+  { id:'ai-nav', name:'AI导航站', domain:'www.hpennn.online', type:'Cloudflare', status:'running' },
+  { id:'ai-resume', name:'AI简历生成', domain:'resume.hpenn.xyz', type:'Cloudflare', status:'running' },
+  { id:'image-tools', name:'图片处理工具', domain:'www.kuaisutupo.xyz', type:'Cloudflare', status:'running' },
+  { id:'doc-summary', name:'文档摘要工具', domain:'doc.hpenn.xyz', type:'Cloudflare', status:'running' },
+  { id:'text-tools', name:'文本处理工具', domain:'www.hpenn.xyz', type:'Cloudflare', status:'running' },
+  { id:'doc-convert', name:'文档格式转换', domain:'convert.hpenn.xyz', type:'Cloudflare', status:'running' },
+  { id:'dev-tools', name:'开发者工具集', domain:'www.hpennn.xyz', type:'Cloudflare', status:'running' },
+  { id:'table-gen', name:'表格生成器', domain:'table.hpenn.xyz', type:'Cloudflare', status:'running' },
+  { id:'ai-blessing', name:'AI祝福语', domain:'www.zhinenti.vip', type:'Cloudflare', status:'running' },
+  { id:'ai-copywriter', name:'AI文案写手', domain:'www.zhinenti.xyz', type:'Cloudflare', status:'running' },
+  { id:'batch-img-edit', name:'批量图片编辑', domain:'imgedit.hpenn.xyz', type:'Cloudflare', status:'running' },
+  { id:'ai-naming', name:'AI起名助手', domain:'www.hpenn.online', type:'Cloudflare', status:'running' },
+  { id:'ai-content-tools', name:'AI内容工具', domain:'content.hpennn.xyz', type:'Cloudflare', status:'running' },
+  { id:'ai-marketing-tools', name:'AI营销工具', domain:'marketing.hpennn.xyz', type:'Cloudflare', status:'running' },
+  { id:'ai-ppt-report', name:'AI PPT报告', domain:'ppt.hpennn.xyz', type:'Cloudflare', status:'running' },
+  { id:'social-publisher', name:'社媒发布器', domain:'publish.hpennn.xyz', type:'Cloudflare', status:'running' },
+  { id:'smart-marketing', name:'智慧营销', domain:'smart.hpennn.xyz', type:'Cloudflare', status:'running' },
+];
+
+// ============ HELPERS ============
+function $(id) { return document.getElementById(id); }
+function toast(msg, type) {
+  type = type || 'info';
+  var colors = { success:'background:rgba(63,185,80,.9);color:#fff', error:'background:rgba(248,81,73,.9);color:#fff', warning:'background:rgba(210,153,34,.9);color:#fff', info:'background:rgba(88,166,255,.9);color:#fff' };
+  var el = document.createElement('div');
+  el.className = 'toast';
+  el.style.cssText = colors[type] || colors.info;
+  el.textContent = msg;
+  $('toast-container').appendChild(el);
+  setTimeout(function(){ el.remove(); }, 3000);
+}
+function formatCredits(v) { return v==null?'0':v.toLocaleString(); }
+function formatTime(t) { if(!t) return '-'; try { return new Date(t).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}); } catch(e){ return t; } }
+function formatFullTime(t) { if(!t) return '-'; try { return new Date(t).toLocaleString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit'}); } catch(e){ return t; } }
+function formatFileSize(b) { if(b<1024) return b+' B'; if(b<1024*1024) return (b/1024).toFixed(1)+' KB'; return (b/1024/1024).toFixed(1)+' MB'; }
+function downloadFile(filename, content) { var b=new Blob([content],{type:'text/plain'}); var u=URL.createObjectURL(b); var a=document.createElement('a'); a.href=u; a.download=filename; a.click(); URL.revokeObjectURL(u); }
+function getAdminHeaders() { var h={}; h['x-user-id']=S.userId; if(S.adminToken) h['x-admin-token']=S.adminToken; return h; }
+
+function api(method, url, body, opts) {
+  opts = opts || {};
+  var fetchOpts = { method: method, headers: { 'Content-Type':'application/json', 'x-user-id': S.userId } };
+  if (opts.headers) { for (var k in opts.headers) fetchOpts.headers[k] = opts.headers[k]; }
+  if (body && !(body instanceof FormData)) { fetchOpts.body = JSON.stringify(body); }
+  else if (body instanceof FormData) { fetchOpts.body = body; delete fetchOpts.headers['Content-Type']; }
+  return fetch(url, fetchOpts).then(function(res) {
+    if (opts.raw) return res;
+    if (!res.ok) return res.json().catch(function(){ return {}; }).then(function(err) { var e = new Error(err.detail||err.message||'请求失败'); e.status = res.status; throw e; });
+    return res.json();
+  });
+}
+
+// ============ TAB SWITCHING ============
+function switchTab(tab) {
+  S.activeTab = tab;
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var page = $('page-'+tab);
+  if (page) page.classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(function(b){
+    if (b.dataset.tab===tab) { b.style.color='#58a6ff'; } else { b.style.color='#8b949e'; }
+  });
+}
+
+function showSubPage(id) { $(id).classList.add('active'); }
+function hideSubPage(id) { $(id).classList.remove('active'); }
+
+// ============ INIT ============
+function init() {
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('admin')==='1') $('admin-login-modal').classList.remove('hidden');
+
+  $('logo-area').addEventListener('click', function(){
+    S.logoClickCount++;
+    if (S.logoClickCount>=5 && !S.isAdmin) { S.logoClickCount=0; $('admin-login-modal').classList.remove('hidden'); }
+  });
+
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.style.color = b.dataset.tab==='home'?'#58a6ff':'#8b949e'; });
+
+  loadServers();
+  checkPaymentStatus();
+  checkAdminStatus();
+  if (S.isLoggedIn) loadUserProfile();
+  renderCreditPackages();
+  renderSkillsGrid();
+  renderProjectsList();
+  updateGenStackOptions();
+  updateAuthUI();
+
+  if (!window.matchMedia('(display-mode: standalone)').matches) {
+    window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); S.deferredPrompt=e; });
+  }
+}
+
+// ============ AUTH ============
+function updateAuthUI() {
+  var badge = $('user-badge');
+  if (S.isLoggedIn) {
+    badge.textContent = '👤 ' + S.loggedInUsername;
+    $('login-btn').classList.add('hidden');
+    $('logout-btn').classList.remove('hidden');
+    $('profile-name').textContent = S.loggedInUsername;
+    $('profile-avatar').textContent = S.loggedInUsername[0].toUpperCase();
+    $('profile-id').textContent = S.userId;
+  } else {
+    badge.textContent = '登录';
+    $('login-btn').classList.remove('hidden');
+    $('logout-btn').classList.add('hidden');
+    $('profile-name').textContent = '未登录';
+    $('profile-avatar').textContent = '?';
+    $('profile-id').textContent = '';
+  }
+  $('credits-val').textContent = formatCredits(S.userCredits);
+  $('profile-credits').textContent = '💎 ' + formatCredits(S.userCredits);
+  if (S.isAdmin) $('admin-entry').style.display='';
+}
+
+function showLoginModal() { S.loginMode='login'; updateLoginModal(); $('login-modal').classList.remove('hidden'); }
+function toggleLoginMode() { S.loginMode = S.loginMode==='login'?'register':'login'; updateLoginModal(); }
+function updateLoginModal() {
+  $('login-modal-title').textContent = S.loginMode==='login'?'🔑 登录':'📝 注册';
+  $('login-submit-btn').textContent = S.loginMode==='login'?'登录':'注册';
+  $('login-confirm').style.display = S.loginMode==='register'?'':'none';
+  $('login-toggle').textContent = S.loginMode==='login'?'没有账号？去注册':'已有账号？去登录';
+}
+
+function handleLogin() {
+  var username = $('login-username').value.trim();
+  var password = $('login-password').value;
+  var confirm2 = $('login-confirm').value;
+  if (!username) { toast('请输入用户名','warning'); return; }
+  if (!password) { toast('请输入密码','warning'); return; }
+  if (S.loginMode==='register' && password!==confirm2) { toast('两次密码不一致','warning'); return; }
+  var endpoint = S.loginMode==='login'?'/api/auth-auto/login':'/api/auth-auto/register';
+  api('POST', endpoint, { username: username, password: password }).then(function(res) {
+    if (res.success) {
+      S.userId = res.user_id; S.isLoggedIn = true; S.loggedInUsername = username;
+      localStorage.setItem('user_id', res.user_id); localStorage.setItem('logged_in_username', username);
+      $('login-modal').classList.add('hidden');
+      $('login-username').value=''; $('login-password').value=''; $('login-confirm').value='';
+      toast(S.loginMode==='login'?'登录成功':'注册成功','success');
+      loadUserProfile(); checkPaymentStatus(); checkAdminStatus(); updateAuthUI();
+    } else { toast(res.message||'操作失败','error'); }
+  }).catch(function(e){ toast(e.message,'error'); });
+}
+
+function handleLogout() {
+  S.isLoggedIn=false; S.loggedInUsername=''; S.userId='user_'+Math.random().toString(36).slice(2,10);
+  S.isAdmin=false; S.adminToken=''; S.userCredits=0;
+  localStorage.removeItem('user_id'); localStorage.removeItem('logged_in_username');
+  updateAuthUI(); toast('已退出登录','success');
+}
+
+function loadUserProfile() {
+  if (!S.isLoggedIn) return;
+  api('GET', '/api/auth-auto/profile', null, {headers:{'x-user-id':S.userId}}).then(function(res) {
+    S.userCredits = res.credits || 0;
+    $('profile-credits').textContent = '💎 ' + formatCredits(S.userCredits);
+    $('credits-val').textContent = formatCredits(S.userCredits);
+    $('profile-status').textContent = S.userCredits>0?'有积分':'免费';
+    $('profile-status').className = 'tag '+(S.userCredits>0?'tag-green':'tag-gray');
+    $('profile-created').textContent = formatFullTime(res.created_at);
+    $('profile-modal-content').innerHTML = '<div class="flex justify-between"><span class="text-dark-500">积分余额</span><span class="text-accent-orange font-bold">💎 '+formatCredits(S.userCredits)+'</span></div><div class="flex justify-between"><span class="text-dark-500">用户ID</span><span class="text-dark-400 font-mono text-xs">'+S.userId+'</span></div><div class="flex justify-between"><span class="text-dark-500">注册时间</span><span class="text-dark-400">'+formatFullTime(res.created_at)+'</span></div>';
+  }).catch(function(){});
+}
+
+function showProfileModal() { if (!S.isLoggedIn) { showLoginModal(); return; } loadUserProfile(); $('profile-modal').classList.remove('hidden'); }
+
+// ============ PAYMENT ============
+function checkPaymentStatus() {
+  api('GET', '/api/payment/user/'+S.userId).then(function(res) {
+    S.userCredits = res.credits || 0; updateAuthUI();
+  }).catch(function(){});
+}
+
+function showPaymentModal() { if (!S.isLoggedIn) { showLoginModal(); return; } renderPaymentPackages(); $('payment-modal').classList.remove('hidden'); }
+
+function renderCreditPackages() {
+  $('credit-packages').innerHTML = CREDIT_PACKAGES.map(function(p){
+    return '<div class="card text-center !p-2 cursor-pointer credit-pkg-card '+(p.recommend?'border-accent-blue':'')+'" data-key="'+p.key+'" onclick="selectCreditPkg(\''+p.key+'\')"><div class="text-sm font-semibold">'+p.label+'</div><div class="text-accent-orange font-bold">¥'+p.price+'</div><div class="text-xs text-dark-500">'+formatCredits(p.credits)+'积分</div>'+(p.recommend?'<span class="tag tag-blue">推荐</span>':'')+'</div>';
+  }).join('');
+}
+
+function renderPaymentPackages() {
+  $('payment-packages').innerHTML = CREDIT_PACKAGES.map(function(p){
+    return '<div class="card flex items-center gap-3 credit-pkg-card '+(p.recommend?'border-accent-blue':'')+'" data-key="'+p.key+'" onclick="selectCreditPkg(\''+p.key+'\')"><div class="flex-1"><div class="text-sm font-semibold">'+p.label+' '+(p.recommend?'⭐':'')+'</div><div class="text-xs text-dark-500">'+formatCredits(p.credits)+' 积分 · '+p.desc+'</div></div><div class="text-accent-orange font-bold">¥'+p.price+'</div></div>';
+  }).join('');
+  selectCreditPkg('pro');
+}
+
+function selectCreditPkg(key) {
+  S.selectedPackage = key;
+  document.querySelectorAll('.credit-pkg-card').forEach(function(c){ c.style.background = c.dataset.key===key?'rgba(88,166,255,.1)':''; });
+}
+
+function handlePay() {
+  api('POST', '/api/payment/create', { user_id:S.userId, package:S.selectedPackage }).then(function(res) {
+    if (res.pay_url) { window.open(res.pay_url, '_blank'); toast('请在新窗口完成支付','info'); pollPaymentStatus(res.order_id); }
+  }).catch(function(e){ toast(e.message,'error'); });
+}
+
+function pollPaymentStatus(orderId) {
+  var count = 0;
+  function check() {
+    if (count>=30) { toast('支付确认中，请稍后刷新','info'); return; }
+    count++;
+    setTimeout(function(){
+      api('GET', '/api/payment/check/'+orderId).then(function(res) {
+        if (res.status==='paid') { toast('支付成功！积分已到账','success'); $('payment-modal').classList.add('hidden'); checkPaymentStatus(); return; }
+        check();
+      }).catch(function(){ check(); });
+    }, 3000);
+  }
+  check();
+}
+
+// ============ DEPLOY ============
+function setDeployMode(mode) {
+  S.deployMode = mode;
+  $('deploy-mode-upload').style.borderColor = mode==='upload'?'#58a6ff':'#30363d';
+  $('deploy-mode-server').style.borderColor = mode==='server'?'#58a6ff':'#30363d';
+  $('deploy-server-section').classList.toggle('hidden', mode!=='server');
+  $('deploy-upload-section').classList.toggle('hidden', mode!=='upload');
+  S.projectInfo=null; S.scriptOutput='';
+  $('project-info-section').classList.add('hidden'); $('deploy-options-section').classList.add('hidden'); $('script-output-section').classList.add('hidden');
+}
+
+function setDeployType(type) {
+  S.deployType = type;
+  document.querySelectorAll('.deploy-type-card').forEach(function(c){ c.style.borderColor=c.dataset.type===type?'#58a6ff':'#30363d'; c.style.background=c.dataset.type===type?'rgba(88,166,255,.1)':''; });
+}
+
+function connectServer() {
+  var host=$('ssh-host').value, port=$('ssh-port').value||'22', username=$('ssh-username').value||'root', password=$('ssh-password').value;
+  if (!host||!password) { toast('请填写服务器IP和密码','warning'); return; }
+  $('ssh-connect-btn').disabled=true; $('ssh-connect-btn').innerHTML='<span class="spinner"></span> 连接中...';
+  api('POST', '/api/deploy/connect', { host:host, port:parseInt(port), username:username, password:password }).then(function(res) {
+    S.sshSessionId=res.session_id; S.sshConnected=true;
+    $('ssh-form-card').classList.add('hidden'); $('ssh-connected-card').classList.remove('hidden');
+    $('ssh-host-info').textContent=res.hostname||host; $('deploy-path-section').classList.remove('hidden');
+    toast('连接成功','success'); scanRemotePaths();
+  }).catch(function(e){ toast(e.message,'error'); }).finally(function(){ $('ssh-connect-btn').disabled=false; $('ssh-connect-btn').textContent='连接服务器'; });
+}
+
+function disconnectServer() {
+  if (S.sshSessionId) { api('POST', '/api/deploy/disconnect?session_id='+S.sshSessionId).catch(function(){}); }
+  S.sshSessionId=null; S.sshConnected=false;
+  $('ssh-form-card').classList.remove('hidden'); $('ssh-connected-card').classList.add('hidden'); $('deploy-path-section').classList.add('hidden');
+  toast('已断开','info');
+}
+
+function scanRemotePaths() {
+  if (!S.sshSessionId) return;
+  api('GET', '/api/deploy/list-paths?session_id='+S.sshSessionId).then(function(res) {
+    var sel = $('path-select');
+    sel.innerHTML = '<option value="">选择远程项目目录</option>' + (res||[]).map(function(p){ return '<option value="'+p.path+'">📁 '+p.name+' ('+p.path+')</option>'; }).join('');
+  }).catch(function(e){ toast(e.message,'error'); });
+}
+
+function onPathSelect(val) { if (val) { $('project-path').value=val; detectProject(); } }
+
+function handleDeployZipSelect(input) {
+  var file = input.files[0];
+  if (file && file.name.toLowerCase().endsWith('.zip')) {
+    S.deployUploadFile=file; $('deploy-file-info').textContent='📎 '+file.name+' ('+formatFileSize(file.size)+')'; $('deploy-file-info').classList.remove('hidden'); $('detect-upload-btn').disabled=false;
+  } else { toast('请选择 .zip 文件','error'); }
+}
+
+function detectUploadedProject() {
+  if (!S.deployUploadFile) return;
+  $('detect-upload-btn').disabled=true; $('detect-upload-btn').innerHTML='<span class="spinner"></span> 检测中...';
+  var fd = new FormData(); fd.append('file', S.deployUploadFile);
+  fetch('/api/deploy/upload-detect', { method:'POST', body:fd }).then(function(res) {
+    if (!res.ok) return res.json().catch(function(){ return {}; }).then(function(err){ throw new Error(err.detail||'检测失败'); });
+    return res.json();
+  }).then(function(info) {
+    S.projectInfo=info; S.projectPath=info.path||''; S.deployTempDir=info.temp_dir||'';
+    if (info.recommend_deploy) S.deployType=info.recommend_deploy;
+    showProjectInfo(info); toast('识别成功：'+info.project_name+' ('+info.type+')','success');
+  }).catch(function(e){ toast(e.message,'error'); }).finally(function(){ $('detect-upload-btn').disabled=false; $('detect-upload-btn').textContent='🔍 检测项目'; });
+}
+
+function detectProject() {
+  var path = $('project-path').value.trim();
+  if (!path) { toast('请输入项目路径','warning'); return; }
+  $('detect-btn').disabled=true; $('detect-btn').innerHTML='<span class="spinner"></span>';
+  var payload = { path: path };
+  if (S.sshSessionId) payload.session_id = S.sshSessionId;
+  api('POST', '/api/deploy/detect', payload).then(function(res) {
+    S.projectInfo=res; if (res.recommend_deploy) S.deployType=res.recommend_deploy;
+    showProjectInfo(res); toast('检测完成','success');
+  }).catch(function(e){ toast(e.message,'error'); }).finally(function(){ $('detect-btn').disabled=false; $('detect-btn').textContent='🔍 检测'; });
+}
+
+function showProjectInfo(info) {
+  $('project-info-section').classList.remove('hidden'); $('deploy-options-section').classList.remove('hidden');
+  $('project-info-content').innerHTML = '<div class="flex justify-between"><span class="text-dark-500">项目名称</span><span>'+(info.project_name||'-')+'</span></div><div class="flex justify-between"><span class="text-dark-500">项目类型</span><span class="tag tag-green">'+(info.type||'-')+'</span></div><div class="flex justify-between"><span class="text-dark-500">框架</span><span>'+(info.framework||'-')+'</span></div><div class="flex justify-between"><span class="text-dark-500">包管理器</span><span>'+(info.package_manager||'-')+'</span></div>';
+  setDeployType(S.deployType);
+}
+
+function generateScript() {
+  $('generate-btn').disabled=true; $('generate-btn').innerHTML='<span class="spinner"></span> 生成中...';
+  var payload = { path: $('project-path').value, deploy_type: S.deployType, domain: $('deploy-domain').value||undefined };
+  if (S.sshSessionId) payload.session_id = S.sshSessionId;
+  if (S.deployType==='server' && S.servers.length>0) payload.server = S.servers[S.selectedServerIdx];
+  api('POST', '/api/deploy/generate', payload).then(function(res) {
+    S.scriptOutput=res.script; S.scriptFilename=res.filename; S.extraFiles=res.extra_files||[];
+    $('script-output-content').textContent=res.script; $('script-output-section').classList.remove('hidden');
+    toast('脚本生成成功','success');
+  }).catch(function(e){ toast(e.message,'error'); }).finally(function(){ $('generate-btn').disabled=false; $('generate-btn').textContent='🚀 生成部署脚本'; });
+}
+
+function copyScript() { navigator.clipboard.writeText(S.scriptOutput); toast('已复制','success'); }
+function downloadScript() { downloadFile(S.scriptFilename||'deploy.sh', S.scriptOutput); }
+
+function startRemoteDeploy() {
+  if (!S.scriptOutput) { toast('请先生成脚本','warning'); return; }
+  $('remote-deploy-section').classList.remove('hidden'); $('remote-log-content').textContent='';
+  var deployBody = { script:S.scriptOutput, project_path:$('project-path').value };
+  if (S.sshSessionId) deployBody.session_id=S.sshSessionId; else deployBody.server_index=S.selectedServerIdx;
+  fetch('/api/deploy/remote', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(deployBody) }).then(function(resp) {
+    var reader = resp.body.getReader(); var decoder = new TextDecoder(); var buffer='';
+    function read() {
+      reader.read().then(function(result) {
+        if (result.done) return;
+        buffer += decoder.decode(result.value, {stream:true});
+        var lines = buffer.split('\n'); buffer = lines.pop()||'';
+        lines.forEach(function(line) {
+          if (line.startsWith('data: ')) { $('remote-log-content').textContent += line.slice(6)+'\n'; $('remote-log-content').scrollTop=$('remote-log-content').scrollHeight; }
+        });
+        read();
       });
     }
-  </script>
-  <body>
-    <div id="app">
-      <div id="app-loading"><div class="spinner"></div>加载中...</div>
-    </div>
-  </body>
+    read();
+  }).catch(function(e){ $('remote-log-content').textContent += '❌ '+e.message+'\n'; });
+}
+
+function loadServers() { api('GET','/api/servers').then(function(res){ S.servers=res.servers||[]; }).catch(function(){ S.servers=[]; }); }
+
+// ============ FIX ============
+function setFixMode(mode) {
+  S.fixMode=mode;
+  $('fix-mode-upload').style.borderColor=mode==='upload'?'#58a6ff':'#30363d';
+  $('fix-mode-remote').style.borderColor=mode==='remote'?'#58a6ff':'#30363d';
+  $('fix-upload-section').classList.toggle('hidden',mode!=='upload');
+  $('fix-remote-section').classList.toggle('hidden',mode!=='remote');
+}
+
+function handleFixZipSelect(input) {
+  var file=input.files[0];
+  if (file && file.name.toLowerCase().endsWith('.zip')) {
+    if (file.size>10*1024*1024) { toast('文件不能超过10MB','warning'); return; }
+    S.fixUploadFile=file; $('fix-file-info').textContent='📎 '+file.name+' ('+formatFileSize(file.size)+')'; $('fix-file-info').classList.remove('hidden'); $('analyze-upload-btn').disabled=false;
+  }
+}
+
+function analyzeUploadedCode() {
+  if (!S.fixUploadFile) return;
+  $('analyze-upload-btn').disabled=true; $('analyze-upload-btn').innerHTML='<span class="spinner"></span> 检测中...';
+  var fd=new FormData(); fd.append('file',S.fixUploadFile); if(S.userId) fd.append('user_id',S.userId);
+  api('POST','/api/fix/analyze-upload',fd).then(function(res) {
+    S.analysisResult=res; S.fixTempDir=res.temp_dir||''; showAnalysisResult(res);
+    if (res.total>0) toast('发现 '+res.total+' 个问题','warning'); else toast('未检测到问题','success');
+  }).catch(function(e){ toast(e.message,'error'); }).finally(function(){ $('analyze-upload-btn').disabled=false; $('analyze-upload-btn').textContent='🔍 开始检测'; });
+}
+
+function analyzeRemoteCode() {
+  var serverId=$('fix-server-select').value, path=$('fix-project-path').value.trim();
+  if (!serverId) { toast('请选择服务器','warning'); return; }
+  if (!path) { toast('请输入项目路径','warning'); return; }
+  $('analyze-remote-btn').disabled=true; $('analyze-remote-btn').innerHTML='<span class="spinner"></span> 检测中...';
+  api('POST','/api/fix/analyze-remote',{server_id:serverId,project_path:path,user_id:S.userId}).then(function(res) {
+    S.analysisResult=res; S.fixTempDir=res.temp_dir||''; showAnalysisResult(res);
+    if (res.total>0) toast('发现 '+res.total+' 个问题','warning'); else toast('未检测到问题','success');
+  }).catch(function(e){ toast(e.message,'error'); }).finally(function(){ $('analyze-remote-btn').disabled=false; $('analyze-remote-btn').textContent='🔍 开始检测'; });
+}
+
+function showAnalysisResult(res) {
+  $('analysis-result-section').classList.remove('hidden');
+  $('analysis-summary').innerHTML='<span class="tag tag-red">'+(res.total||0)+' 个问题</span>';
+  $('analysis-errors').innerHTML=(res.errors||[]).map(function(e,i){
+    return '<div class="flex items-center gap-2 text-xs p-2 rounded bg-dark-50 cursor-pointer" onclick="toggleError('+i+')"><input type="checkbox" class="error-check" data-idx="'+i+'" '+(S.selectedErrors.includes(i)?'checked':'')+'><span class="tag tag-red">'+(e.type||'error')+'</span><span class="flex-1 truncate">'+(e.message||e.msg||'')+'</span><span class="text-dark-400">'+(e.file||'')+'</span></div>';
+  }).join('');
+}
+
+function toggleError(idx) {
+  var pos=S.selectedErrors.indexOf(idx);
+  if (pos===-1) S.selectedErrors.push(idx); else S.selectedErrors.splice(pos,1);
+  document.querySelectorAll('.error-check').forEach(function(c){ c.checked=S.selectedErrors.includes(parseInt(c.dataset.idx)); });
+}
+
+function selectAllErrors() { if(!S.analysisResult) return; S.selectedErrors=(S.analysisResult.errors||[]).map(function(_,i){return i;}); document.querySelectorAll('.error-check').forEach(function(c){c.checked=true;}); }
+
+function repairErrors() {
+  if (S.selectedErrors.length===0) return;
+  if (S.userCredits<200) { toast('积分不足，代码修复需要200积分','warning'); showPaymentModal(); return; }
+  var errors=S.selectedErrors.map(function(i){return S.analysisResult.errors[i];});
+  var endpoint = S.fixMode==='upload'?'/api/fix/repair-upload':'/api/fix/repair-remote';
+  var payload = S.fixMode==='upload'?{temp_dir:S.fixTempDir,errors:errors,user_id:S.userId}:{server_id:$('fix-server-select').value,project_path:$('fix-project-path').value,errors:errors,user_id:S.userId};
+  api('POST',endpoint,payload).then(function(res) {
+    S.repairResults=res.results||[]; $('repair-result-section').classList.remove('hidden');
+    $('repair-results-content').innerHTML=S.repairResults.map(function(r){return '<div class="text-xs p-2 rounded bg-dark-50"><span class="tag tag-green">✅</span> <span class="font-semibold">'+r.file+'</span></div>';}).join('');
+    if (res.credits_remaining!=null) { S.userCredits=res.credits_remaining; updateAuthUI(); }
+    toast('修复完成，共'+S.repairResults.length+'个文件','success');
+  }).catch(function(e){ if(e.status===402) showPaymentModal(); else toast(e.message,'error'); });
+}
+
+function downloadRepairedZip() {
+  if (!S.fixTempDir) return;
+  fetch('/api/fix/download-repaired',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({temp_dir:S.fixTempDir})}).then(function(res){return res.blob();}).then(function(blob){var u=URL.createObjectURL(blob);var a=document.createElement('a');a.href=u;a.download='repaired-project.zip';a.click();}).catch(function(e){toast('下载失败','error');});
+}
+
+// ============ GENERATE ============
+function onGenTypeChange() { updateGenStackOptions(); }
+function updateGenStackOptions() {
+  var type=$('gen-project-type').value, stacks=TECH_STACKS[type]||{}, sel=$('gen-tech-stack');
+  sel.innerHTML=Object.keys(stacks).map(function(k){return '<option value="'+k+'">'+stacks[k].label+'</option>';}).join('');
+}
+
+function generateProject() {
+  var desc=$('gen-description').value.trim();
+  if (!desc) { toast('请输入项目描述','warning'); return; }
+  if (S.userCredits<500) { toast('积分不足，生成项目需要500积分','warning'); showPaymentModal(); return; }
+  $('gen-btn').disabled=true; $('gen-btn').innerHTML='<span class="spinner"></span> 生成中...';
+  api('POST','/api/generate/project',{description:desc,project_type:$('gen-project-type').value,tech_stack:$('gen-tech-stack').value,user_id:S.userId}).then(function(res) {
+    S.genFiles=res.files||[]; if(S.genFiles.length>0) S.genSelectedFile=0; showGenResult();
+    if(res.credits_remaining!=null){S.userCredits=res.credits_remaining;updateAuthUI();}
+    toast('生成完成，共'+S.genFiles.length+'个文件','success');
+  }).catch(function(e){if(e.status===402)showPaymentModal();else toast(e.message,'error');}).finally(function(){$('gen-btn').disabled=false;$('gen-btn').textContent='✨ AI 生成项目';});
+}
+
+function showGenResult() {
+  $('gen-result-section').classList.remove('hidden');
+  $('gen-files-list').innerHTML=S.genFiles.map(function(f,i){return '<div class="text-xs p-2 rounded cursor-pointer '+(i===S.genSelectedFile?'bg-accent-blue/10 text-accent-blue':'bg-dark-50 text-dark-500')+'" onclick="selectGenFile('+i+')">📄 '+(f.filename||f.name||'file'+i)+'</div>';}).join('');
+  if(S.genSelectedFile>=0&&S.genFiles[S.genSelectedFile]) $('gen-file-content').textContent=S.genFiles[S.genSelectedFile].content;
+}
+
+function selectGenFile(i) { S.genSelectedFile=i; showGenResult(); }
+function copyGenFile() { if(S.genSelectedFile>=0&&S.genFiles[S.genSelectedFile]){navigator.clipboard.writeText(S.genFiles[S.genSelectedFile].content);toast('已复制','success');} }
+function downloadGenProject() { fetch('/api/generate/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({files:S.genFiles,project_name:'generated-project'})}).then(function(r){return r.blob();}).then(function(b){var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='generated-project.zip';a.click();}).catch(function(){toast('下载失败','error');}); }
+
+// ============ EDIT CODE ============
+function handleEditZipSelect(input) {
+  var file=input.files[0];
+  if(file&&file.name.toLowerCase().endsWith('.zip')){if(file.size>5*1024*1024){toast('文件不能超过5MB','warning');return;}S.editZipFile=file;$('edit-file-info').textContent='📎 '+file.name+' ('+formatFileSize(file.size)+')';$('edit-file-info').classList.remove('hidden');}
+}
+
+function aiModifyProject() {
+  if(!S.editZipFile){toast('请先上传项目源码','warning');return;}
+  if(!$('edit-code-desc').value.trim()){toast('请描述修改需求','warning');return;}
+  if(S.userCredits<300){toast('积分不足，修改代码需要300积分','warning');showPaymentModal();return;}
+  $('edit-code-btn').disabled=true;$('edit-code-btn').innerHTML='<span class="spinner"></span> 修改中...';
+  var fd=new FormData();fd.append('file',S.editZipFile);fd.append('description',$('edit-code-desc').value);if(S.userId)fd.append('user_id',S.userId);
+  api('POST','/api/generate/modify-code',fd).then(function(res){
+    S.editModifyResult=res.files||[];if(S.editModifyResult.length>0)S.editCodeSelectedFile=0;showEditResult();
+    if(res.credits_remaining!=null){S.userCredits=res.credits_remaining;updateAuthUI();}
+    toast('修改完成，共'+S.editModifyResult.length+'个文件','success');
+  }).catch(function(e){if(e.status===402)showPaymentModal();else toast(e.message,'error');}).finally(function(){$('edit-code-btn').disabled=false;$('edit-code-btn').textContent='🛠 AI 修改代码';});
+}
+
+function showEditResult() {
+  $('edit-result-section').classList.remove('hidden');
+  $('edit-files-list').innerHTML=S.editModifyResult.map(function(f,i){return '<div class="text-xs p-2 rounded cursor-pointer '+(i===S.editCodeSelectedFile?'bg-accent-blue/10 text-accent-blue':'bg-dark-50 text-dark-500')+'" onclick="selectEditFile('+i+')">📄 '+(f.file||'file'+i)+'</div>';}).join('');
+  if(S.editCodeSelectedFile>=0&&S.editModifyResult[S.editCodeSelectedFile]) $('edit-file-content').textContent=S.editModifyResult[S.editCodeSelectedFile].modified;
+}
+
+function selectEditFile(i){S.editCodeSelectedFile=i;showEditResult();}
+function copyModifiedFile(){if(S.editCodeSelectedFile>=0&&S.editModifyResult[S.editCodeSelectedFile]){navigator.clipboard.writeText(S.editModifyResult[S.editCodeSelectedFile].modified);toast('已复制','success');}}
+function downloadModifiedZip(){fetch('/api/generate/modify-code/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({files:S.editModifyResult})}).then(function(r){return r.blob();}).then(function(b){var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='modified-project.zip';a.click();}).catch(function(){toast('下载失败','error');});}
+
+// ============ SKILLS ============
+function renderSkillsGrid() {
+  $('skills-grid').innerHTML=CONFIG_SKILLS.map(function(s){return '<div class="card text-center !p-2" onclick="selectSkill(\''+s.id+'\')"><span class="text-xl">'+s.icon+'</span><div class="text-xs font-semibold mt-1">'+s.name+'</div></div>';}).join('');
+}
+
+function selectSkill(id) {
+  S.selectedSkill=id;var skill=CONFIG_SKILLS.find(function(s){return s.id===id;});if(!skill)return;
+  $('skill-input-section').classList.remove('hidden');$('skill-title').textContent=skill.icon+' '+skill.name;$('skill-desc').textContent=skill.description;$('skill-input').placeholder=skill.placeholder;$('skill-input').value='';$('skill-result-section').classList.add('hidden');S.skillResult='';
+}
+
+function executeSkill() {
+  var text=$('skill-input').value.trim();if(!text){toast('请输入描述信息','warning');return;}
+  $('skill-execute-btn').disabled=true;$('skill-execute-btn').innerHTML='<span class="spinner"></span> 生成中...';
+  api('POST','/api/skills/'+S.selectedSkill+'/execute',{text:text,user_id:S.userId}).then(function(res){
+    if(res.output){S.skillResult=res.output.content||JSON.stringify(res.output,null,2);$('skill-result-section').classList.remove('hidden');$('skill-result-content').textContent=S.skillResult;}
+    else if(res.error){toast(res.error,'error');}
+  }).catch(function(e){if(e.status===402){toast('积分不足','warning');showPaymentModal();}else toast(e.message,'error');}).finally(function(){$('skill-execute-btn').disabled=false;$('skill-execute-btn').textContent='⚡ 生成配置';});
+}
+
+function copySkillResult(){navigator.clipboard.writeText(S.skillResult);toast('已复制','success');}
+function downloadSkillResult(){var s=CONFIG_SKILLS.find(function(s){return s.id===S.selectedSkill;});downloadFile(s?s.id+'_output.txt':'skill_output.txt',S.skillResult);}
+
+// ============ PROJECTS ============
+function renderProjectsList() {
+  $('projects-list').innerHTML=PROJECTS_DATA.map(function(p){return '<div class="card"><div class="flex items-center gap-2 mb-1"><span class="text-sm font-semibold">'+p.name+'</span><span class="tag '+(p.type==='Docker'?'tag-blue':'tag-purple')+'">'+p.type+'</span><span class="tag tag-green">'+p.status+'</span></div><div class="text-xs text-dark-500">'+p.domain+'</div></div>';}).join('');
+  $('stat-projects').textContent=PROJECTS_DATA.length;
+}
+
+// ============ ADMIN ============
+function checkAdminStatus() { api('GET','/api/admin-auto/verify',null,{headers:{'x-user-id':S.userId}}).then(function(res){S.isAdmin=res.is_admin;if(S.isAdmin)$('admin-entry').style.display='';}).catch(function(){S.isAdmin=false;}); }
+
+function verifyAdminToken() {
+  var token=$('admin-token-input').value;
+  api('GET','/api/admin-auto/verify',null,{headers:{'x-admin-token':token,'x-user-id':S.userId}}).then(function(res){
+    if(res.is_admin){S.isAdmin=true;S.adminToken=token;$('admin-login-modal').classList.add('hidden');$('admin-entry').style.display='';toast('管理员验证成功','success');showSubPage('sub-admin');loadAdminStats();}
+    else{toast('Token 无效','error');}
+  }).catch(function(){toast('验证失败','error');});
+}
+
+function switchAdminTab(tab) {
+  S.adminSubTab=tab;document.querySelectorAll('.admin-tab-content').forEach(function(c){c.classList.add('hidden');});var el=$('admin-'+tab);if(el)el.classList.remove('hidden');
+  if(tab==='dashboard')loadAdminStats();else if(tab==='users')loadAdminUsers();else if(tab==='orders')loadAdminOrders();else if(tab==='logs')loadDeployLogs();else if(tab==='credits')loadCreditLogs();
+}
+
+function loadAdminStats() { api('GET','/api/admin-auto/stats',null,{headers:getAdminHeaders()}).then(function(res){S.adminStats=res;$('admin-total-users').textContent=res.total_users||0;$('admin-paid-users').textContent=res.paid_users||0;$('admin-total-income').textContent='¥'+(res.total_income||0);}).catch(function(){}); }
+
+function loadAdminUsers() { api('GET','/api/admin-auto/users',null,{headers:getAdminHeaders()}).then(function(res){S.adminUsers=res.users||[];renderAdminUsers(S.adminUsers);}).catch(function(){}); }
+
+function renderAdminUsers(users) {
+  $('admin-users-list').innerHTML=users.map(function(u){return '<div class="card !p-2"><div class="flex items-center gap-2 text-xs"><span class="font-mono text-dark-400">'+u.user_id+'</span><span class="tag '+(u.paid_type&&u.paid_type!=='free'?'tag-orange':'tag-gray')+'">'+(u.paid_type||'free')+'</span><span class="text-accent-orange">💎'+formatCredits(u.credits||0)+'</span></div></div>';}).join('');
+}
+
+function filterAdminUsers() { var q=$('admin-user-search').value.toLowerCase();renderAdminUsers(S.adminUsers.filter(function(u){return u.user_id.toLowerCase().includes(q);})); }
+
+function loadAdminOrders() { api('GET','/api/admin-auto/orders',null,{headers:getAdminHeaders()}).then(function(res){S.adminOrders=res.orders||[];$('admin-orders-list').innerHTML=S.adminOrders.map(function(o){return '<div class="card !p-2 text-xs"><div class="flex items-center gap-2"><span class="font-mono text-dark-400">'+(o.order_id||o.id||'')+'</span><span class="tag '+(o.status==='paid'?'tag-green':'tag-gray')+'">'+(o.status||'')+'</span><span class="text-accent-orange">¥'+(o.amount||0)+'</span></div></div>';}).join('');}).catch(function(){}); }
+
+function loadDeployLogs() { api('GET','/api/admin-auto/logs',null,{headers:getAdminHeaders()}).then(function(res){S.deployLogs=res.logs||[];$('admin-logs-list').innerHTML=S.deployLogs.map(function(l){return '<div class="card !p-2 text-xs"><div class="flex items-center gap-2"><span class="tag '+(l.status==='success'?'tag-green':'tag-red')+'">'+(l.status||'')+'</span><span class="text-dark-400">'+formatTime(l.created_at||l.timestamp)+'</span></div></div>';}).join('');}).catch(function(){}); }
+
+function loadCreditLogs() { api('GET','/api/admin-auto/credit-logs',null,{headers:getAdminHeaders()}).then(function(res){S.creditLogs=res.logs||[];$('admin-credit-logs').innerHTML=S.creditLogs.map(function(l){return '<div class="card !p-2 text-xs"><span class="text-dark-400">'+formatTime(l.created_at)+'</span> <span class="text-accent-orange">'+(l.amount>0?'+':'')+l.amount+'</span> <span>'+(l.description||'')+'</span></div>';}).join('');}).catch(function(){}); }
+
+function adminAddCredits() {
+  var uid=$('admin-credit-uid').value.trim(),amount=parseInt($('admin-credit-amount').value),desc=$('admin-credit-desc').value;
+  if(!uid){toast('请输入用户ID','warning');return;}if(!amount||amount<=0){toast('积分数量必须大于0','warning');return;}
+  api('POST','/api/admin-auto/add-credits',{user_id:uid,amount:amount,description:desc||'管理员手动充值'},{headers:getAdminHeaders()}).then(function(res){toast(res.message||'积分添加成功','success');$('admin-credit-uid').value='';$('admin-credit-amount').value='1000';$('admin-credit-desc').value='';loadCreditLogs();}).catch(function(e){toast(e.message,'error');});
+}
+
+// ============ PWA ============
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(function(){}); }
+
+// ============ BOOT ============
+init();
+</script>
+</body>
 </html>

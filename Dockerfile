@@ -14,8 +14,12 @@ COPY backend/ ./backend/
 COPY web/ ./web/
 COPY src/ ./src/
 
-# Copy pre-built frontend assets (no npm build needed)
-COPY frontend/dist/ ./frontend/dist/
+# Copy frontend (single-file HTML + PWA assets)
+COPY frontend/index.html ./frontend/index.html
+COPY frontend/manifest.json ./frontend/manifest.json
+COPY frontend/sw.js ./frontend/sw.js
+COPY frontend/icons/ ./frontend/icons/
+COPY frontend/icon-192.png ./frontend/icon-192.png
 
 # Create data directories
 RUN mkdir -p /app/data /app/web/data
