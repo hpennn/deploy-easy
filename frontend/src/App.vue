@@ -1577,7 +1577,7 @@ export default {
     // ===== Admin =====
     async checkAdminStatus() {
       try {
-        const res = await axios.get('/api/admin/verify', {
+        const res = await axios.get('/api/admin-auto/verify', {
           headers: { 'x-user-id': this.userId },
         })
         this.isAdmin = res.data.is_admin
@@ -1587,7 +1587,7 @@ export default {
     },
     async verifyAdminToken() {
       try {
-        const res = await axios.get('/api/admin/verify', {
+        const res = await axios.get('/api/admin-auto/verify', {
           headers: {
             'x-admin-token': this.adminTokenInput,
             'x-user-id': this.userId,
@@ -1615,7 +1615,7 @@ export default {
     },
     async loadAdminStats() {
       try {
-        const res = await axios.get('/api/admin/stats', { headers: this.getAdminHeaders() })
+        const res = await axios.get('/api/admin-auto/stats', { headers: this.getAdminHeaders() })
         this.adminStats = res.data
       } catch (err) {
         if (err.response?.status === 403) this.$message.error('需要管理员权限')
@@ -1623,7 +1623,7 @@ export default {
     },
     async loadAdminUsers() {
       try {
-        const res = await axios.get('/api/admin/users', { headers: this.getAdminHeaders() })
+        const res = await axios.get('/api/admin-auto/users', { headers: this.getAdminHeaders() })
         this.adminUsers = res.data.users || []
       } catch (err) {
         if (err.response?.status === 403) this.$message.error('需要管理员权限')
@@ -1631,7 +1631,7 @@ export default {
     },
     async loadAdminOrders() {
       try {
-        const res = await axios.get('/api/admin/orders', { headers: this.getAdminHeaders() })
+        const res = await axios.get('/api/admin-auto/orders', { headers: this.getAdminHeaders() })
         this.adminOrders = res.data.orders || []
       } catch (err) {
         if (err.response?.status === 403) this.$message.error('需要管理员权限')
@@ -1639,7 +1639,7 @@ export default {
     },
     async loadDeployLogs() {
       try {
-        const res = await axios.get('/api/admin/logs', { headers: this.getAdminHeaders() })
+        const res = await axios.get('/api/admin-auto/logs', { headers: this.getAdminHeaders() })
         this.deployLogs = res.data.logs || []
       } catch (err) {
         if (err.response?.status === 403) this.$message.error('需要管理员权限')
@@ -1648,7 +1648,7 @@ export default {
     async handleUserAction(user, command) {
       if (command === 'grant_admin' || command === 'revoke_admin') {
         try {
-          await axios.post('/api/admin/set-admin', {
+          await axios.post('/api/admin-auto/set-admin', {
             user_id: user.user_id,
             is_admin: command === 'grant_admin',
           }, { headers: this.getAdminHeaders() })
@@ -1683,7 +1683,7 @@ export default {
           ? new Date(this.editUserForm.expires_at).toISOString()
           : null
 
-        await axios.put(`/api/admin/users/${this.editingUser.user_id}`, {
+        await axios.put(`/api/admin-auto/users/${this.editingUser.user_id}`, {
           paid_type: this.editUserForm.paid_type,
           expires_at: expiresAt,
         }, { headers: this.getAdminHeaders() })
@@ -1753,7 +1753,7 @@ export default {
 
       this.loginLoading = true
       try {
-        const endpoint = this.loginMode === 'login' ? '/api/auth/login' : '/api/auth/register'
+        const endpoint = this.loginMode === 'login' ? '/api/auth-auto/login' : '/api/auth-auto/register'
         const res = await axios.post(endpoint, {
           username: this.loginForm.username,
           password: this.loginForm.password,
@@ -2422,7 +2422,7 @@ export default {
     async loadUserProfile() {
       if (!this.isLoggedIn) return
       try {
-        const res = await axios.get('/api/auth/profile', {
+        const res = await axios.get('/api/auth-auto/profile', {
           headers: { 'x-user-id': this.userId },
         })
         this.userProfile = res.data
@@ -2446,7 +2446,7 @@ export default {
     async loadCreditLogs() {
       try {
         const params = this.adminCreditUserId ? `?user_id=${this.adminCreditUserId}` : ''
-        const res = await axios.get(`/api/admin/credit-logs${params}`, { headers: this.getAdminHeaders() })
+        const res = await axios.get(`/api/admin-auto/credit-logs${params}`, { headers: this.getAdminHeaders() })
         this.creditLogs = res.data.logs || []
       } catch (err) {
         if (err.response?.status === 403) this.$message.error('需要管理员权限')
@@ -2457,7 +2457,7 @@ export default {
       if (!this.adminAddCreditAmount || this.adminAddCreditAmount <= 0) { this.$message.warning('积分数量必须大于0'); return }
       this.adminAddCreditLoading = true
       try {
-        const res = await axios.post('/api/admin/add-credits', {
+        const res = await axios.post('/api/admin-auto/add-credits', {
           user_id: this.adminAddCreditUserId.trim(),
           amount: this.adminAddCreditAmount,
           description: this.adminAddCreditDesc || '管理员手动充值',
@@ -2673,24 +2673,6 @@ export default {
       return { syntax: '语法', import: '依赖', type: '类型', config: '配置', bracket: '括号' }[type] || type
     },
 
-    // ===== User Profile =====
-    async loadUserProfile() {
-      if (!this.isLoggedIn) return
-      try {
-        const res = await axios.get('/api/auth/profile', {
-          headers: { 'x-user-id': this.userId },
-        })
-        this.userProfile = res.data
-        this.userCredits = res.data.credits || 0
-        this.userProfileLoaded = true
-      } catch { /* ignore */ }
-    },
-    formatFullTime(t) {
-      if (!t) return '-'
-      try {
-        return new Date(t).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
-      } catch { return t }
-    },
 
     // ===== Edit Code Tab =====
     copyModifiedCode() {
