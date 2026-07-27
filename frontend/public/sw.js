@@ -1,4 +1,4 @@
-const CACHE_NAME = 'deploy-easy-v1';
+const CACHE_NAME = 'deploy-easy-v2';
 const STATIC_CACHE = [
   '/manifest.json',
   '/icons/icon-192.png',
