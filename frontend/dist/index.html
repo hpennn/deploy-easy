@@ -11,17 +11,62 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>智能部署助手</title>
+    <script>
+      // 全局错误捕获 - 用于诊断白屏问题
+      window.__appErrors = [];
+      window.onerror = function(msg, url, line, col, error) {
+        window.__appErrors.push({type:'error', msg:msg, url:url, line:line, col:col, stack:error?error.stack:''});
+        console.error('[APP ERROR]', msg, url, line, col, error);
+      };
+      window.addEventListener('unhandledrejection', function(event) {
+        window.__appErrors.push({type:'promise', msg:String(event.reason), stack:event.reason&&event.reason.stack||''});
+        console.error('[PROMISE ERROR]', event.reason);
+      });
+    </script>
     <script type="module" crossorigin src="/assets/index-D7HUltBA.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-4s3OWl2j.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-4s3OWl2j.css" />
+    <style>
+      #app-loading { display:flex; align-items:center; justify-content:center; height:100vh; background:#0d1117; color:#c9d1d9; font-family:-apple-system,sans-serif; font-size:14px; }
+      #app-loading .spinner { width:24px; height:24px; border:3px solid #30363d; border-top-color:#58a6ff; border-radius:50%; animation:spin 0.8s linear infinite; margin-right:12px; }
+      @keyframes spin { to { transform:rotate(360deg); } }
+      #app-error { display:none; position:fixed; top:0; left:0; right:0; padding:12px 16px; background:#da3633; color:white; font-size:13px; z-index:99999; font-family:monospace; max-height:50vh; overflow-y:auto; }
+    </style>
   </head>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js');
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
       });
     }
   </script>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div id="app-loading"><div class="spinner"></div>加载中...</div>
+    </div>
+    <div id="app-error"></div>
+    <script>
+      // 5秒后检查 Vue 是否成功挂载
+      setTimeout(function() {
+        var appEl = document.getElementById('app');
+        var loadingEl = document.getElementById('app-loading');
+        var errorEl = document.getElementById('app-error');
+        // 如果 loading 还在，说明 Vue 没挂载成功
+        if (loadingEl && loadingEl.parentNode === appEl) {
+          var errors = window.__appErrors || [];
+          var msg = '页面加载超时，Vue 未挂载成功。\n';
+          if (errors.length > 0) {
+            msg += '\n捕获到 ' + errors.length + ' 个错误：\n';
+            errors.forEach(function(e, i) {
+              msg += '\n[' + (i+1) + '] ' + (e.type === 'promise' ? 'Promise' : 'Error') + ': ' + e.msg;
+              if (e.url) msg += ' (' + e.url + ':' + e.line + ')';
+              if (e.stack) msg += '\n' + e.stack.split('\n').slice(0,3).join('\n');
+            });
+          }
+          errorEl.style.display = 'block';
+          errorEl.textContent = msg;
+          loadingEl.style.display = 'none';
+        }
+      }, 5000);
+    </script>
   </body>
 </html>
