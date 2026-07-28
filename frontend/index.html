@@ -79,7 +79,7 @@
 
 <!-- ==================== 工作台 Page ==================== -->
 <div id="page-home" class="page active">
-  <div class="px-4 pt-4 pb-2 flex items-center justify-between">
+  <div class="px-4 pt-4 pb-2 flex items-center justify-between max-w-6xl mx-auto w-full">
     <div class="flex items-center gap-2" id="logo-area">
       <span class="text-2xl">🚀</span>
       <h1 class="text-lg font-bold text-dark-700">智能部署助手</h1>
@@ -91,7 +91,7 @@
     </div>
   </div>
   <!-- Quick Stats -->
-  <div class="px-4 py-2 grid grid-cols-3 gap-3">
+  <div class="px-4 py-2 grid grid-cols-3 gap-3 max-w-6xl mx-auto w-full">
     <div class="card text-center !cursor-default">
       <div class="text-2xl font-bold text-accent-green" id="stat-projects">0</div>
       <div class="text-xs text-dark-500 mt-1">项目总数</div>
@@ -106,9 +106,9 @@
     </div>
   </div>
   <!-- Feature Cards -->
-  <div class="px-4 py-2">
+  <div class="px-4 py-2 max-w-6xl mx-auto w-full">
     <h2 class="text-sm font-semibold text-dark-500 mb-3">⚡ 快捷功能</h2>
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-6xl mx-auto w-full">
       <div class="card flex flex-col items-center gap-2" onclick="switchTab('deploy')">
         <span class="text-3xl">🚀</span>
         <span class="text-sm font-semibold">免费部署</span>
@@ -142,7 +142,7 @@
     </div>
   </div>
   <!-- Recent Activity -->
-  <div class="px-4 py-2">
+  <div class="px-4 py-2 max-w-6xl mx-auto w-full">
     <h2 class="text-sm font-semibold text-dark-500 mb-3">📋 最近活动</h2>
     <div id="recent-activity" class="space-y-2">
       <div class="text-xs text-dark-400 text-center py-4">加载中...</div>
@@ -151,7 +151,7 @@
 </div>
 
 <!-- ==================== 部署 Page ==================== -->
-<div id="page-deploy" class="page">
+<div class="px-4 pt-4 pb-2 max-w-6xl mx-auto w-full">
   <div class="px-4 pt-4 pb-2">
     <h1 class="text-lg font-bold">🚀 免费部署</h1>
   </div>
@@ -172,7 +172,7 @@
   </div>
   <!-- Deploy Mode -->
   <div class="px-4 mb-3">
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-6xl mx-auto w-full">
       <div class="card text-center" id="deploy-mode-upload" onclick="setDeployMode('upload')">
         <span class="text-2xl">📤</span>
         <div class="text-sm font-semibold mt-1">上传项目</div>
@@ -312,7 +312,7 @@
 </div>
 
 <!-- ==================== 检测 Page ==================== -->
-<div id="page-detect" class="page">
+<div class="px-4 pt-4 pb-2 max-w-6xl mx-auto w-full">
   <div class="px-4 pt-4 pb-2">
     <h1 class="text-lg font-bold">🔧 代码检测</h1>
   </div>
@@ -332,7 +332,7 @@
     </div>
   </div>
   <div class="px-4 mb-3">
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-6xl mx-auto w-full">
       <div class="card text-center" id="fix-mode-upload" onclick="setFixMode('upload')">
         <span class="text-2xl">📤</span>
         <div class="text-sm font-semibold mt-1">上传项目</div>
@@ -392,7 +392,7 @@
 </div>
 
 <!-- ==================== 我的 Page ==================== -->
-<div id="page-profile" class="page">
+<div class="px-4 pt-4 pb-2 max-w-6xl mx-auto w-full">
   <div class="px-4 pt-4 pb-2">
     <h1 class="text-lg font-bold">👤 我的</h1>
   </div>
@@ -637,7 +637,7 @@
 
 <!-- ==================== Bottom Tab Bar ==================== -->
 <nav class="fixed bottom-0 left-0 right-0 bg-dark-50 border-t border-dark-200 z-40">
-  <div class="grid grid-cols-4 max-w-lg mx-auto">
+  <div class="grid grid-cols-4 max-w-6xl mx-auto">
     <button class="tab-btn active flex flex-col items-center py-2 text-xs" onclick="switchTab('home')" data-tab="home">
       <span class="text-lg">🏠</span><span class="mt-0.5">工作台</span>
     </button>
