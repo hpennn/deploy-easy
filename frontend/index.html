@@ -452,12 +452,30 @@
   <div class="px-4 pt-4 flex items-center gap-2">
     <button class="btn-secondary btn-sm" onclick="hideSubPage('sub-skills')">← 返回</button>
     <h2 class="text-sm font-semibold">⚙️ 配置生成</h2>
+    <button class="ml-auto text-xs text-accent-blue" onclick="document.getElementById('skills-guide').classList.toggle('hidden')">📖 使用说明</button>
   </div>
   <div class="px-4 py-3 space-y-3 flex-1 overflow-y-auto">
+    <div id="skills-guide" class="card hidden" style="background:#161b22;border-color:#30363d">
+      <h3 class="text-sm font-semibold mb-2">📖 使用说明</h3>
+      <div class="space-y-2 text-xs text-dark-500">
+        <div><span class="text-accent-blue font-semibold">① 选择技能</span> — 点击下方任意技能卡片，进入配置输入界面</div>
+        <div><span class="text-accent-blue font-semibold">② 描述需求</span> — 在文本框中填写你的具体需求，描述越详细生成效果越好</div>
+        <div><span class="text-accent-blue font-semibold">③ 生成配置</span> — 点击「⚡ 生成配置」按钮，AI 将自动生成配置文件</div>
+        <div><span class="text-accent-blue font-semibold">④ 复制/下载</span> — 生成完成后可一键复制或下载配置文件</div>
+        <div class="mt-2 p-2 rounded" style="background:#0d1117;border:1px solid #30363d">
+          <div class="text-dark-400 font-semibold mb-1">💡 填写技巧</div>
+          <div>• Dockerfile：说明应用语言、依赖、端口（如"Node.js 18 + Express，端口3000"）</div>
+          <div>• Nginx：说明域名、后端地址、是否需要SSL（如"deploy.example.com 反代到 localhost:8000，需要HTTPS"）</div>
+          <div>• CI/CD：说明代码仓库、触发条件、部署目标（如"push到main时自动部署到服务器"）</div>
+          <div>• 数据库：说明类型、表结构、权限需求（如"MySQL，用户表+订单表，需要备份脚本"）</div>
+        </div>
+      </div>
+    </div>
     <div class="grid grid-cols-2 gap-2" id="skills-grid"></div>
     <div id="skill-input-section" class="hidden">
       <h3 class="text-sm font-semibold mb-2" id="skill-title"></h3>
       <p class="text-xs text-dark-500 mb-2" id="skill-desc"></p>
+      <div id="skill-tips" class="hidden text-xs p-2 rounded mb-2" style="background:#0d1117;border:1px solid #30363d;color:#8b949e"></div>
       <textarea id="skill-input" rows="4" class="w-full" placeholder="描述你的配置需求..."></textarea>
       <button class="btn-primary w-full mt-2" onclick="executeSkill()" id="skill-execute-btn">⚡ 生成配置</button>
     </div>
@@ -633,14 +651,14 @@ const TECH_STACKS = {
 };
 
 const CONFIG_SKILLS = [
-  { id:'dockerfile_gen', name:'Dockerfile生成', icon:'🐳', description:'根据应用描述生成优化的多阶段Dockerfile', placeholder:'描述你的应用...' },
-  { id:'docker_compose', name:'Docker Compose', icon:'🐳', description:'生成完整的docker-compose.yml编排配置', placeholder:'描述多容器架构...' },
-  { id:'nginx_config', name:'Nginx配置', icon:'🌐', description:'生成Nginx反向代理、SSL配置', placeholder:'描述Nginx需求...' },
-  { id:'deploy_script', name:'部署脚本', icon:'🚀', description:'生成自动化部署Shell脚本', placeholder:'描述部署需求...' },
-  { id:'env_config', name:'环境变量', icon:'🔑', description:'生成环境变量模板', placeholder:'描述环境变量需求...' },
-  { id:'ssl_setup', name:'SSL证书', icon:'🔒', description:'生成SSL证书配置', placeholder:'描述SSL需求...' },
-  { id:'ci_cd', name:'CI/CD流水线', icon:'🔄', description:'生成GitHub Actions配置', placeholder:'描述CI/CD需求...' },
-  { id:'db_setup', name:'数据库配置', icon:'🗄️', description:'生成数据库初始化SQL', placeholder:'描述数据库需求...' },
+  { id:'dockerfile_gen', name:'Dockerfile生成', icon:'🐳', description:'根据应用描述生成优化的多阶段Dockerfile', placeholder:'示例：Python FastAPI 应用，依赖 redis 和 postgresql，监听 8000 端口', tips:'填写应用语言、框架版本、系统依赖、运行端口等信息，会生成多阶段构建的优化 Dockerfile' },
+  { id:'docker_compose', name:'Docker Compose', icon:'🐳', description:'生成完整的docker-compose.yml多容器编排', placeholder:'示例：前端Nginx + 后端Python + MySQL + Redis，前端80端口，后端8000端口', tips:'描述各服务名称、镜像、端口映射、数据卷挂载、网络配置等需求' },
+  { id:'nginx_config', name:'Nginx配置', icon:'🌐', description:'生成Nginx反向代理、SSL、负载均衡配置', placeholder:'示例：域名 deploy.example.com 反代到 localhost:8000，需要 HTTPS + HTTP自动跳转', tips:'填写域名、后端服务地址和端口、是否需要SSL证书、是否做负载均衡等' },
+  { id:'deploy_script', name:'部署脚本', icon:'🚀', description:'生成自动化部署Shell脚本（SSH拉取+构建+重启）', placeholder:'示例：SSH连接服务器，拉取GitHub仓库，docker-compose重启，部署到/opt/app', tips:'填写服务器连接方式、项目路径、部署步骤（git pull、docker build、重启服务等）' },
+  { id:'env_config', name:'环境变量', icon:'🔑', description:'生成 .env 环境变量模板和安全配置', placeholder:'示例：数据库连接、Redis地址、JWT密钥、API Key等环境变量', tips:'列出需要的配置项，会生成带注释说明的 .env 模板文件' },
+  { id:'ssl_setup', name:'SSL证书', icon:'🔒', description:'生成 Let's Encrypt SSL证书申请和Nginx HTTPS配置', placeholder:'示例：为 deploy.example.com 申请免费SSL证书，自动续期', tips:'填写域名和邮箱，会生成 certbot 命令和 Nginx HTTPS 配置段' },
+  { id:'ci_cd', name:'CI/CD流水线', icon:'🔄', description:'生成 GitHub Actions / GitLab CI 自动化部署配置', placeholder:'示例：push到main分支时自动构建Docker镜像并部署到服务器', tips:'填写代码仓库、触发条件（push/PR）、构建步骤、部署目标等信息' },
+  { id:'db_setup', name:'数据库配置', icon:'🗄️', description:'生成数据库初始化SQL、用户权限和备份脚本', placeholder:'示例：MySQL数据库，创建用户表（id/name/email/created_at）和订单表，需要每日备份脚本', tips:'填写数据库类型、表结构、权限需求、备份策略等，会生成完整SQL和运维脚本' },
 ];
 
 const PROJECTS_DATA = [
@@ -1127,6 +1145,7 @@ function renderSkillsGrid() {
 function selectSkill(id) {
   S.selectedSkill=id;var skill=CONFIG_SKILLS.find(function(s){return s.id===id;});if(!skill)return;
   $('skill-input-section').classList.remove('hidden');$('skill-title').textContent=skill.icon+' '+skill.name;$('skill-desc').textContent=skill.description;$('skill-input').placeholder=skill.placeholder;$('skill-input').value='';$('skill-result-section').classList.add('hidden');S.skillResult='';
+  var tipsEl=document.getElementById('skill-tips');if(tipsEl){tipsEl.textContent=skill.tips||'';tipsEl.classList.toggle('hidden',!skill.tips);}
 }
 
 function executeSkill() {
