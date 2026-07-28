@@ -1143,7 +1143,7 @@ function downloadSkillResult(){var s=CONFIG_SKILLS.find(function(s){return s.id=
 
 // ============ PROJECTS ============
 function renderProjectsList() {
-  $('projects-list').innerHTML=PROJECTS_DATA.map(function(p){return '<div class="card"><div class="flex items-center gap-2 mb-1"><span class="text-sm font-semibold">'+p.name+'</span><span class="tag '+(p.type==='Docker'?'tag-blue':'tag-purple')+'">'+p.type+'</span><span class="tag tag-green">'+p.status+'</span></div><div class="text-xs text-dark-500">'+p.domain+'</div></div>';}).join('');
+  $('projects-list').innerHTML=PROJECTS_DATA.map(function(p){return '<a href="https://'+p.domain+'" target="_blank" rel="noopener" class="card block" style="text-decoration:none;color:inherit"><div class="flex items-center gap-2 mb-1"><span class="text-sm font-semibold">'+p.name+'</span><span class="tag '+(p.type==='Docker'?'tag-blue':'tag-purple')+'">'+p.type+'</span><span class="tag tag-green">'+p.status+'</span></div><div class="flex items-center justify-between"><span class="text-xs text-dark-500">'+p.domain+'</span><span class="text-xs text-accent-blue">访问 →</span></div></a>';}).join('');
   $('stat-projects').textContent=PROJECTS_DATA.length;
 }
 
