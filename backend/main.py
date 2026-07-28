@@ -319,6 +319,14 @@ async def serve_icon(filename: str):
     return FileResponse(os.path.join(frontend_static, "icons", filename))
 
 
+@app.get("/download.html")
+async def serve_download():
+    dl = os.path.join(frontend_path, "download.html")
+    if os.path.isfile(dl):
+        return FileResponse(dl)
+    return FileResponse(os.path.join(frontend_static, "download.html"))
+
+
 # SPA fallback for Vue.js router
 @app.get("/{full_path:path}")
 async def serve_spa(full_path: str):
