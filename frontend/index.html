@@ -654,6 +654,7 @@
 </nav>
 
 <script>
+function $(id) { return document.getElementById(id); }
 // ============ STATE ============
 const S = {
   userId: localStorage.getItem('user_id') || 'user_' + Math.random().toString(36).slice(2,10),
