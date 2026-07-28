@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下载 - 智能部署助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3fb950',
+                        'primary-dark': '#238636',
+                        bg: '#0d1117',
+                        'card': '#161b22',
+                        'border': '#30363d',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0d1117; }
+        .btn-download-android {
+            background: linear-gradient(135deg, #3fb950, #238636);
+            transition: all 0.2s ease;
+        }
+        .btn-download-android:hover {
+            background: linear-gradient(135deg, #46c458, #2ea043);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(63, 185, 80, 0.4);
+        }
+        .btn-download-android:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(63, 185, 80, 0.2);
+        }
+        .btn-download-windows {
+            transition: all 0.2s ease;
+        }
+        .btn-download-windows:hover {
+            background-color: #1a2332;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(63, 185, 80, 0.15);
+        }
+        .btn-download-windows:active {
+            transform: translateY(0);
+        }
+        .qr-placeholder {
+            background: #1c2128;
+            border: 2px dashed #30363d;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-200">
+    <div class="max-w-lg mx-auto px-4 pb-10">
+
+        <!-- 顶部返回按钮 -->
+        <div class="pt-4 pb-2">
+            <a href="https://deploy.zhinenti.cn" class="inline-flex items-center text-gray-400 hover:text-primary transition-colors">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span class="text-sm">返回</span>
+            </a>
+        </div>
+
+        <!-- 应用信息区域 -->
+        <div class="flex flex-col items-center py-6">
+            <!-- 应用图标 -->
+            <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-lg mb-4">
+                <span class="text-white text-xl font-bold">部署</span>
+            </div>
+            <!-- 应用名称 -->
+            <h1 class="text-2xl font-bold text-white mt-1">智能部署助手</h1>
+            <!-- 描述 -->
+            <p class="text-gray-400 text-sm mt-1">一键部署，智能运维</p>
+            <!-- 版本号 -->
+            <span class="mt-2 px-3 py-0.5 rounded-full bg-card border border-border text-xs text-gray-500">v1.0.0</span>
+        </div>
+
+        <!-- 手机端下载 -->
+        <div class="mt-6 bg-card rounded-xl border border-border p-5">
+            <h2 class="text-lg font-semibold text-white mb-4">📱 手机版</h2>
+
+            <!-- 下载按钮 -->
+            <a href="#" class="btn-download-android block w-full text-center py-3.5 rounded-xl text-white font-semibold text-base shadow-md">
+                下载 Android 版
+            </a>
+            <p class="text-center text-xs text-gray-500 mt-2">APK 安装包 | v1.0.0 | 约 5MB</p>
+
+            <!-- 二维码区域 -->
+            <div class="flex flex-col items-center mt-5">
+                <div class="qr-placeholder w-40 h-40 rounded-xl flex items-center justify-center">
+                    <span class="text-gray-500 text-sm">二维码</span>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">扫码下载</p>
+            </div>
+
+            <!-- 系统要求 -->
+            <p class="text-center text-xs text-gray-600 mt-4">系统要求：Android 7.0+</p>
+        </div>
+
+        <!-- 电脑端下载 -->
+        <div class="mt-4 bg-card rounded-xl border border-border p-5">
+            <h2 class="text-lg font-semibold text-white mb-4">💻 电脑版</h2>
+
+            <!-- 下载按钮 -->
+            <a href="#" class="btn-download-windows block w-full text-center py-3.5 rounded-xl text-primary font-semibold text-base border-2 border-primary bg-transparent">
+                下载 Windows 版
+            </a>
+            <p class="text-center text-xs text-gray-500 mt-2">Windows 安装包 | v1.0.0 | 约 50MB</p>
+
+            <!-- 系统要求 -->
+            <p class="text-center text-xs text-gray-600 mt-4">系统要求：Windows 10 及以上 (64位)</p>
+        </div>
+
+        <!-- 功能特性 -->
+        <div class="mt-6">
+            <h2 class="text-lg font-semibold text-white mb-3 px-1">✨ 功能特性</h2>
+
+            <div class="space-y-3">
+                <!-- 一键部署 -->
+                <div class="bg-card rounded-xl border border-border p-4">
+                    <h3 class="text-sm font-semibold text-white mb-1">🚀 一键部署</h3>
+                    <p class="text-xs text-gray-400">支持50+应用模板，扫码即部署</p>
+                </div>
+                <!-- 智能检测 -->
+                <div class="bg-card rounded-xl border border-border p-4">
+                    <h3 class="text-sm font-semibold text-white mb-1">🔍 智能检测</h3>
+                    <p class="text-xs text-gray-400">网站健康检查，SSL/性能/安全一键诊断</p>
+                </div>
+                <!-- 智能修复 -->
+                <div class="bg-card rounded-xl border border-border p-4">
+                    <h3 class="text-sm font-semibold text-white mb-1">🛠️ 智能修复</h3>
+                    <p class="text-xs text-gray-400">常见问题自动修复，配置自动生成</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="mt-8 text-center pb-6">
+            <p class="text-sm text-gray-600">更多版本敬请期待</p>
+            <p class="text-xs text-gray-700 mt-1">支持 iOS / macOS 版本开发中</p>
+            <a href="https://deploy.zhinenti.cn" class="inline-block mt-3 text-xs text-primary hover:underline">返回首页</a>
+        </div>
+
+    </div>
+</body>
+</html>
