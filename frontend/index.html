@@ -719,7 +719,7 @@ const CONFIG_SKILLS = [
   { id:'nginx_config', name:'Nginx配置', icon:'🌐', description:'生成Nginx反向代理、SSL、负载均衡配置', placeholder:'示例：域名 deploy.example.com 反代到 localhost:8000，需要 HTTPS + HTTP自动跳转', tips:'填写域名、后端服务地址和端口、是否需要SSL证书、是否做负载均衡等' },
   { id:'deploy_script', name:'部署脚本', icon:'🚀', description:'生成自动化部署Shell脚本（SSH拉取+构建+重启）', placeholder:'示例：SSH连接服务器，拉取GitHub仓库，docker-compose重启，部署到/opt/app', tips:'填写服务器连接方式、项目路径、部署步骤（git pull、docker build、重启服务等）' },
   { id:'env_config', name:'环境变量', icon:'🔑', description:'生成 .env 环境变量模板和安全配置', placeholder:'示例：数据库连接、Redis地址、JWT密钥、API Key等环境变量', tips:'列出需要的配置项，会生成带注释说明的 .env 模板文件' },
-  { id:'ssl_setup', name:'SSL证书', icon:'🔒', description:'生成 Let's Encrypt SSL证书申请和Nginx HTTPS配置', placeholder:'示例：为 deploy.example.com 申请免费SSL证书，自动续期', tips:'填写域名和邮箱，会生成 certbot 命令和 Nginx HTTPS 配置段' },
+  { id:'ssl_setup', name:'SSL证书', icon:'🔒', description:'生成 Let\'s Encrypt SSL证书申请和Nginx HTTPS配置', placeholder:'示例：为 deploy.example.com 申请免费SSL证书，自动续期', tips:'填写域名和邮箱，会生成 certbot 命令和 Nginx HTTPS 配置段' },
   { id:'ci_cd', name:'CI/CD流水线', icon:'🔄', description:'生成 GitHub Actions / GitLab CI 自动化部署配置', placeholder:'示例：push到main分支时自动构建Docker镜像并部署到服务器', tips:'填写代码仓库、触发条件（push/PR）、构建步骤、部署目标等信息' },
   { id:'db_setup', name:'数据库配置', icon:'🗄️', description:'生成数据库初始化SQL、用户权限和备份脚本', placeholder:'示例：MySQL数据库，创建用户表（id/name/email/created_at）和订单表，需要每日备份脚本', tips:'填写数据库类型、表结构、权限需求、备份策略等，会生成完整SQL和运维脚本' },
 ];
