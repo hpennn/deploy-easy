@@ -145,7 +145,7 @@
   <div class="px-4 py-2">
     <h2 class="text-sm font-semibold text-dark-500 mb-3">📋 最近活动</h2>
     <div id="recent-activity" class="space-y-2">
-      <div class="text-xs text-dark-400 text-center py-4">暂无活动记录</div>
+      <div class="text-xs text-dark-400 text-center py-4">加载中...</div>
     </div>
   </div>
 </div>
@@ -258,6 +258,34 @@
       <button class="btn-primary w-full" onclick="generateScript()" id="generate-btn">🚀 生成部署脚本</button>
     </div>
   </div>
+  <!-- Quick Templates -->
+  <div id="deploy-quick-templates" class="px-4 mt-3 hidden">
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-2">⚡ 快捷模板</h3>
+      <div class="grid grid-cols-2 gap-2">
+        <div class="card text-center !p-2" onclick="applyDeployTemplate('nodejs')">
+          <div class="text-lg">🟢</div>
+          <div class="text-xs font-semibold mt-1">Node.js Express</div>
+          <div class="text-xs text-dark-500">端口3000</div>
+        </div>
+        <div class="card text-center !p-2" onclick="applyDeployTemplate('python')">
+          <div class="text-lg">🐍</div>
+          <div class="text-xs font-semibold mt-1">Python Flask/FastAPI</div>
+          <div class="text-xs text-dark-500">端口8000</div>
+        </div>
+        <div class="card text-center !p-2" onclick="applyDeployTemplate('java')">
+          <div class="text-lg">☕</div>
+          <div class="text-xs font-semibold mt-1">Java Spring Boot</div>
+          <div class="text-xs text-dark-500">端口8080</div>
+        </div>
+        <div class="card text-center !p-2" onclick="applyDeployTemplate('frontend')">
+          <div class="text-lg">🎨</div>
+          <div class="text-xs font-semibold mt-1">Vue/React 前端</div>
+          <div class="text-xs text-dark-500">Nginx静态</div>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Script Output -->
   <div id="script-output-section" class="px-4 mt-3 hidden">
     <div class="card">
@@ -273,7 +301,10 @@
   <!-- Remote Deploy Log -->
   <div id="remote-deploy-section" class="px-4 mt-3 hidden">
     <div class="card">
-      <h3 class="text-sm font-semibold mb-2">📡 远程部署日志</h3>
+      <div class="flex items-center gap-2 mb-2">
+        <h3 class="text-sm font-semibold">📡 远程部署日志</h3>
+        <button class="btn-secondary btn-sm ml-auto" onclick="scrollLogToBottom()" style="padding:2px 8px;font-size:11px">↓ 滚到底部</button>
+      </div>
       <div class="code-block min-h-[100px]" id="remote-log-content"></div>
       <div id="remote-deploy-status" class="mt-2 text-sm"></div>
     </div>
@@ -284,6 +315,21 @@
 <div id="page-detect" class="page">
   <div class="px-4 pt-4 pb-2">
     <h1 class="text-lg font-bold">🔧 代码检测</h1>
+  </div>
+  <!-- Usage Guide -->
+  <div class="px-4 mb-3">
+    <div class="card" onclick="this.querySelector('.guide-body').classList.toggle('hidden')">
+      <div class="flex items-center gap-2">
+        <span>📖</span><span class="text-sm font-semibold">使用说明</span>
+        <span class="ml-auto text-dark-400">▼</span>
+      </div>
+      <div class="guide-body hidden mt-3 text-xs text-dark-500 space-y-2">
+        <p><span class="tag tag-green">1</span> 上传项目ZIP或选择远程服务器项目</p>
+        <p><span class="tag tag-green">2</span> AI自动检测代码质量问题</p>
+        <p><span class="tag tag-green">3</span> 查看问题严重度（错误/警告/建议）</p>
+        <p><span class="tag tag-green">4</span> 一键AI修复选中的问题</p>
+      </div>
+    </div>
   </div>
   <div class="px-4 mb-3">
     <div class="grid grid-cols-2 gap-3">
@@ -311,9 +357,15 @@
   </div>
   <div id="fix-remote-section" class="px-4 space-y-3 hidden">
     <div class="card">
-      <h3 class="text-sm font-semibold mb-2">🖥️ 远程项目</h3>
-      <div class="flex gap-2 mb-2">
-        <select id="fix-server-select" class="flex-1"><option value="">选择服务器</option></select>
+      <h3 class="text-sm font-semibold mb-2">🖥️ 远程检测</h3>
+      <div class="p-3 rounded-lg mb-3" style="background:#0d1117;border:1px solid #30363d">
+        <div class="text-xs text-dark-500">💡 远程检测需要先连接服务器。请前往 <span class="text-accent-blue cursor-pointer" onclick="switchTab('deploy')">🚀 免费部署</span> 页面连接服务器，连接后返回即可使用。</div>
+      </div>
+      <div id="fix-ssh-status" class="mb-2">
+        <div class="flex items-center gap-2 text-xs">
+          <span class="tag tag-gray" id="fix-ssh-tag">未连接</span>
+          <span class="text-dark-500" id="fix-ssh-info">请先连接服务器</span>
+        </div>
       </div>
       <input id="fix-project-path" placeholder="项目路径 /www/wwwroot/..." class="w-full mb-2">
       <button class="btn-primary w-full" onclick="analyzeRemoteCode()" id="analyze-remote-btn">🔍 开始检测</button>
@@ -387,6 +439,16 @@
     <h2 class="text-sm font-semibold">✨ 生成项目</h2>
   </div>
   <div class="px-4 py-3 space-y-3 flex-1 overflow-y-auto">
+    <!-- Quick Templates -->
+    <div>
+      <div class="text-xs text-dark-500 mb-2">⚡ 快速模板</div>
+      <div class="flex gap-2 flex-wrap">
+        <button class="btn-secondary btn-sm" onclick="applyGenTemplate('blog')">📝 个人博客</button>
+        <button class="btn-secondary btn-sm" onclick="applyGenTemplate('api')">🔌 API 服务</button>
+        <button class="btn-secondary btn-sm" onclick="applyGenTemplate('todo')">✅ 全栈 Todo</button>
+        <button class="btn-secondary btn-sm" onclick="applyGenTemplate('website')">🏢 企业官网</button>
+      </div>
+    </div>
     <textarea id="gen-description" placeholder="描述你想生成的项目..." rows="3" class="w-full"></textarea>
     <div class="flex gap-2">
       <select id="gen-project-type" class="flex-1" onchange="onGenTypeChange()">
@@ -405,6 +467,7 @@
         <button class="btn-secondary flex-1" onclick="copyGenFile()">📋 复制</button>
         <button class="btn-primary flex-1" onclick="downloadGenProject()">⬇️ 下载ZIP</button>
       </div>
+      <button class="btn-primary w-full mt-2" onclick="saveGenToServer()" id="save-gen-btn">💾 保存到服务器</button>
     </div>
   </div>
 </div>
@@ -645,9 +708,9 @@ const CREDIT_PACKAGES = [
 ];
 
 const TECH_STACKS = {
-  frontend: { vue3:{label:'Vue 3 + Vite',desc:'Vue 3 组合式 API'}, react:{label:'React 18',desc:'React 18 + Hooks'}, html:{label:'原生HTML/CSS/JS',desc:'无框架依赖'} },
-  backend: { fastapi:{label:'FastAPI',desc:'Python 异步框架'}, flask:{label:'Flask',desc:'Python 轻量级框架'}, express:{label:'Express.js',desc:'Node.js 框架'} },
-  fullstack: { nextjs:{label:'Next.js',desc:'React 全栈框架'}, nuxtjs:{label:'Nuxt.js',desc:'Vue 全栈框架'} },
+  frontend: { vue3:{label:'Vue 3 + Vite',desc:'Vue 3 组合式 API'}, react:{label:'React 18',desc:'React 18 + Hooks'}, astro:{label:'Astro + Tailwind CSS',desc:'静态站点生成器'}, nextjs_fe:{label:'Next.js 前端',desc:'React SSR/SSG'}, html:{label:'原生HTML/CSS/JS',desc:'无框架依赖'} },
+  backend: { fastapi:{label:'FastAPI',desc:'Python 异步框架'}, flask:{label:'Flask',desc:'Python 轻量级框架'}, express:{label:'Express.js',desc:'Node.js 框架'}, springboot:{label:'Spring Boot',desc:'Java 框架'} },
+  fullstack: { nextjs:{label:'Next.js',desc:'React 全栈框架'}, nuxtjs:{label:'Nuxt.js',desc:'Vue 全栈框架'}, react_express:{label:'React + Express + SQLite',desc:'轻量全栈'} },
 };
 
 const CONFIG_SKILLS = [
@@ -755,6 +818,10 @@ function init() {
   renderProjectsList();
   updateGenStackOptions();
   updateAuthUI();
+  setDeployMode('server');
+  renderRecentActivity();
+  loadStatsFromStorage();
+  updateFixSshStatus();
 
   if (!window.matchMedia('(display-mode: standalone)').matches) {
     window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); S.deferredPrompt=e; });
@@ -907,7 +974,7 @@ function connectServer() {
     S.sshSessionId=res.session_id; S.sshConnected=true;
     $('ssh-form-card').classList.add('hidden'); $('ssh-connected-card').classList.remove('hidden');
     $('ssh-host-info').textContent=res.hostname||host; $('deploy-path-section').classList.remove('hidden');
-    toast('连接成功','success'); scanRemotePaths();
+    toast('连接成功','success'); scanRemotePaths(); updateFixSshStatus();
   }).catch(function(e){ toast(e.message,'error'); }).finally(function(){ $('ssh-connect-btn').disabled=false; $('ssh-connect-btn').textContent='连接服务器'; });
 }
 
@@ -915,7 +982,7 @@ function disconnectServer() {
   if (S.sshSessionId) { api('POST', '/api/deploy/disconnect?session_id='+S.sshSessionId).catch(function(){}); }
   S.sshSessionId=null; S.sshConnected=false;
   $('ssh-form-card').classList.remove('hidden'); $('ssh-connected-card').classList.add('hidden'); $('deploy-path-section').classList.add('hidden');
-  toast('已断开','info');
+  toast('已断开','info'); updateFixSshStatus();
 }
 
 function scanRemotePaths() {
@@ -962,7 +1029,7 @@ function detectProject() {
 }
 
 function showProjectInfo(info) {
-  $('project-info-section').classList.remove('hidden'); $('deploy-options-section').classList.remove('hidden');
+  $('project-info-section').classList.remove('hidden'); $('deploy-options-section').classList.remove('hidden'); $('deploy-quick-templates').classList.remove('hidden');
   $('project-info-content').innerHTML = '<div class="flex justify-between"><span class="text-dark-500">项目名称</span><span>'+(info.project_name||'-')+'</span></div><div class="flex justify-between"><span class="text-dark-500">项目类型</span><span class="tag tag-green">'+(info.type||'-')+'</span></div><div class="flex justify-between"><span class="text-dark-500">框架</span><span>'+(info.framework||'-')+'</span></div><div class="flex justify-between"><span class="text-dark-500">包管理器</span><span>'+(info.package_manager||'-')+'</span></div>';
   setDeployType(S.deployType);
 }
@@ -976,6 +1043,7 @@ function generateScript() {
     S.scriptOutput=res.script; S.scriptFilename=res.filename; S.extraFiles=res.extra_files||[];
     $('script-output-content').textContent=res.script; $('script-output-section').classList.remove('hidden');
     toast('脚本生成成功','success');
+    addHistoryRecord('deploy', '生成部署脚本: '+(S.projectInfo?S.projectInfo.project_name:'项目'));
   }).catch(function(e){ toast(e.message,'error'); }).finally(function(){ $('generate-btn').disabled=false; $('generate-btn').textContent='🚀 生成部署脚本'; });
 }
 
@@ -991,7 +1059,7 @@ function startRemoteDeploy() {
     var reader = resp.body.getReader(); var decoder = new TextDecoder(); var buffer='';
     function read() {
       reader.read().then(function(result) {
-        if (result.done) return;
+        if (result.done) { addHistoryRecord('deploy','远程部署完成'); return; }
         buffer += decoder.decode(result.value, {stream:true});
         var lines = buffer.split('\n'); buffer = lines.pop()||'';
         lines.forEach(function(line) {
@@ -1030,6 +1098,7 @@ function analyzeUploadedCode() {
   api('POST','/api/fix/analyze-upload',fd).then(function(res) {
     S.analysisResult=res; S.fixTempDir=res.temp_dir||''; showAnalysisResult(res);
     if (res.total>0) toast('发现 '+res.total+' 个问题','warning'); else toast('未检测到问题','success');
+    addHistoryRecord('detect', '检测项目: 发现'+(res.total||0)+'个问题');
   }).catch(function(e){ toast(e.message,'error'); }).finally(function(){ $('analyze-upload-btn').disabled=false; $('analyze-upload-btn').textContent='🔍 开始检测'; });
 }
 
@@ -1041,14 +1110,22 @@ function analyzeRemoteCode() {
   api('POST','/api/fix/analyze-remote',{server_id:serverId,project_path:path,user_id:S.userId}).then(function(res) {
     S.analysisResult=res; S.fixTempDir=res.temp_dir||''; showAnalysisResult(res);
     if (res.total>0) toast('发现 '+res.total+' 个问题','warning'); else toast('未检测到问题','success');
+    addHistoryRecord('detect', '远程检测: 发现'+(res.total||0)+'个问题');
+    updateFixSshStatus();
   }).catch(function(e){ toast(e.message,'error'); }).finally(function(){ $('analyze-remote-btn').disabled=false; $('analyze-remote-btn').textContent='🔍 开始检测'; });
 }
 
 function showAnalysisResult(res) {
   $('analysis-result-section').classList.remove('hidden');
-  $('analysis-summary').innerHTML='<span class="tag tag-red">'+(res.total||0)+' 个问题</span>';
-  $('analysis-errors').innerHTML=(res.errors||[]).map(function(e,i){
-    return '<div class="flex items-center gap-2 text-xs p-2 rounded bg-dark-50 cursor-pointer" onclick="toggleError('+i+')"><input type="checkbox" class="error-check" data-idx="'+i+'" '+(S.selectedErrors.includes(i)?'checked':'')+'><span class="tag tag-red">'+(e.type||'error')+'</span><span class="flex-1 truncate">'+(e.message||e.msg||'')+'</span><span class="text-dark-400">'+(e.file||'')+'</span></div>';
+  var errs=res.errors||[], ec=0, wc=0, sc=0;
+  errs.forEach(function(e){var sev=(e.severity||e.level||e.type||'error').toLowerCase();if(sev==='error'||sev==='错误')ec++;else if(sev==='warning'||sev==='warn'||sev==='警告')wc++;else sc++;});
+  $('analysis-summary').innerHTML='<span class="tag tag-red">'+(res.total||errs.length)+' 个问题</span> <span class="tag tag-red ml-1">错误 '+ec+'</span> <span class="tag tag-orange ml-1">警告 '+wc+'</span> <span class="tag tag-blue ml-1">建议 '+sc+'</span>';
+  $('analysis-errors').innerHTML=errs.map(function(e,i){
+    var sev=(e.severity||e.level||e.type||'error').toLowerCase();
+    var sevClass='tag-red', sevLabel='❌ 错误';
+    if(sev==='warning'||sev==='warn'||sev==='警告'){sevClass='tag-orange';sevLabel='⚠️ 警告';}
+    else if(sev==='suggestion'||sev==='info'||sev==='suggest'||sev==='建议'){sevClass='tag-blue';sevLabel='💡 建议';}
+    return '<div class="flex items-center gap-2 text-xs p-2 rounded bg-dark-50 cursor-pointer" onclick="toggleError('+i+')"><input type="checkbox" class="error-check" data-idx="'+i+'" '+(S.selectedErrors.includes(i)?'checked':'')+'><span class="tag '+sevClass+'">'+sevLabel+'</span><span class="flex-1 truncate">'+(e.message||e.msg||'')+'</span><span class="text-dark-400">'+(e.file||'')+'</span></div>';
   }).join('');
 }
 
@@ -1071,6 +1148,7 @@ function repairErrors() {
     $('repair-results-content').innerHTML=S.repairResults.map(function(r){return '<div class="text-xs p-2 rounded bg-dark-50"><span class="tag tag-green">✅</span> <span class="font-semibold">'+r.file+'</span></div>';}).join('');
     if (res.credits_remaining!=null) { S.userCredits=res.credits_remaining; updateAuthUI(); }
     toast('修复完成，共'+S.repairResults.length+'个文件','success');
+    addHistoryRecord('fix', 'AI修复: '+S.repairResults.length+'个文件');
   }).catch(function(e){ if(e.status===402) showPaymentModal(); else toast(e.message,'error'); });
 }
 
@@ -1095,6 +1173,7 @@ function generateProject() {
     S.genFiles=res.files||[]; if(S.genFiles.length>0) S.genSelectedFile=0; showGenResult();
     if(res.credits_remaining!=null){S.userCredits=res.credits_remaining;updateAuthUI();}
     toast('生成完成，共'+S.genFiles.length+'个文件','success');
+    addHistoryRecord('generate', 'AI生成项目: '+S.genFiles.length+'个文件');
   }).catch(function(e){if(e.status===402)showPaymentModal();else toast(e.message,'error');}).finally(function(){$('gen-btn').disabled=false;$('gen-btn').textContent='✨ AI 生成项目';});
 }
 
@@ -1202,6 +1281,114 @@ function adminAddCredits() {
   var uid=$('admin-credit-uid').value.trim(),amount=parseInt($('admin-credit-amount').value),desc=$('admin-credit-desc').value;
   if(!uid){toast('请输入用户ID','warning');return;}if(!amount||amount<=0){toast('积分数量必须大于0','warning');return;}
   api('POST','/api/admin-auto/add-credits',{user_id:uid,amount:amount,description:desc||'管理员手动充值'},{headers:getAdminHeaders()}).then(function(res){toast(res.message||'积分添加成功','success');$('admin-credit-uid').value='';$('admin-credit-amount').value='1000';$('admin-credit-desc').value='';loadCreditLogs();}).catch(function(e){toast(e.message,'error');});
+}
+
+
+// ============ QUICK TEMPLATES (DEPLOY) ============
+function applyDeployTemplate(tpl) {
+  var map = {
+    nodejs: { domain:'app.example.com', type:'local', desc:'Node.js Express' },
+    python: { domain:'api.example.com', type:'docker', desc:'Python Flask/FastAPI' },
+    java: { domain:'api.example.com', type:'docker', desc:'Java Spring Boot' },
+    frontend: { domain:'www.example.com', type:'local', desc:'Vue/React 前端' }
+  };
+  var t = map[tpl]; if (!t) return;
+  $('deploy-domain').value = t.domain;
+  setDeployType(t.type);
+  toast('已应用 '+t.desc+' 模板','success');
+}
+
+// ============ SCROLL LOG TO BOTTOM ============
+function scrollLogToBottom() {
+  var el = $('remote-log-content');
+  if (el) el.scrollTop = el.scrollHeight;
+}
+
+// ============ QUICK TEMPLATES (GENERATE) ============
+function applyGenTemplate(tpl) {
+  var map = {
+    blog: { desc:'个人博客系统，支持文章发布、分类管理、标签、评论功能', type:'frontend', stack:'vue3' },
+    api: { desc:'RESTful API 服务，支持用户认证、CRUD操作、分页查询', type:'backend', stack:'fastapi' },
+    todo: { desc:'全栈Todo应用，前端增删改查+后端API+数据库持久化', type:'fullstack', stack:'nextjs' },
+    website: { desc:'企业官网，包含首页、关于我们、产品展示、联系我们等页面', type:'frontend', stack:'react' }
+  };
+  var t = map[tpl]; if (!t) return;
+  $('gen-description').value = t.desc;
+  $('gen-project-type').value = t.type;
+  updateGenStackOptions();
+  var sel = $('gen-tech-stack');
+  for (var i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === t.stack) { sel.selectedIndex = i; break; }
+  }
+  toast('已应用模板','success');
+}
+
+// ============ SAVE GEN TO SERVER ============
+function saveGenToServer() {
+  if (!S.genFiles || S.genFiles.length === 0) { toast('请先生成项目','warning'); return; }
+  if (!S.sshConnected && !S.sshSessionId) { toast('请先在部署页面连接服务器','warning'); return; }
+  $('save-gen-btn').disabled = true; $('save-gen-btn').innerHTML = '<span class="spinner"></span> 保存中...';
+  var payload = { files: S.genFiles, session_id: S.sshSessionId, project_path: $('project-path').value || '/www/wwwroot/generated-project' };
+  api('POST', '/api/generate/save-to-server', payload).then(function(res) {
+    toast('保存成功！路径: ' + (res.path || payload.project_path), 'success');
+    addHistoryRecord('save', '保存生成项目到服务器');
+  }).catch(function(e) { toast(e.message || '保存失败','error'); }).finally(function() { $('save-gen-btn').disabled = false; $('save-gen-btn').textContent = '💾 保存到服务器'; });
+}
+
+// ============ HISTORY & STATS ============
+function addHistoryRecord(type, desc) {
+  var history = [];
+  try { history = JSON.parse(localStorage.getItem('deploy_easy_history') || '[]'); } catch(e) { history = []; }
+  history.unshift({ type: type, desc: desc, time: new Date().toISOString() });
+  if (history.length > 10) history = history.slice(0, 10);
+  localStorage.setItem('deploy_easy_history', JSON.stringify(history));
+  renderRecentActivity();
+  updateStatsInStorage(type);
+}
+
+function renderRecentActivity() {
+  var history = [];
+  try { history = JSON.parse(localStorage.getItem('deploy_easy_history') || '[]'); } catch(e) { history = []; }
+  if (history.length === 0) {
+    $('recent-activity').innerHTML = '<div class="text-xs text-dark-400 text-center py-4">暂无活动记录</div>';
+    return;
+  }
+  var iconMap = { deploy:'🚀', detect:'🔧', generate:'✨', fix:'🛠', save:'💾' };
+  $('recent-activity').innerHTML = history.map(function(h) {
+    var icon = iconMap[h.type] || '📋';
+    var time = '';
+    try { time = new Date(h.time).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}); } catch(e) { time = h.time || ''; }
+    return '<div class="flex items-center gap-2 text-xs p-2 rounded" style="background:#161b22;border:1px solid #30363d"><span>' + icon + '</span><span class="flex-1 text-dark-600">' + (h.desc||'') + '</span><span class="text-dark-400">' + time + '</span></div>';
+  }).join('');
+}
+
+function updateStatsInStorage(type) {
+  var stats = {};
+  try { stats = JSON.parse(localStorage.getItem('deploy_easy_stats') || '{}'); } catch(e) { stats = {}; }
+  if (type === 'deploy' || type === 'save') stats.deploys = (stats.deploys || 0) + 1;
+  if (type === 'detect' || type === 'fix') stats.fixes = (stats.fixes || 0) + 1;
+  localStorage.setItem('deploy_easy_stats', JSON.stringify(stats));
+  loadStatsFromStorage();
+}
+
+function loadStatsFromStorage() {
+  var stats = {};
+  try { stats = JSON.parse(localStorage.getItem('deploy_easy_stats') || '{}'); } catch(e) { stats = {}; }
+  if (stats.deploys) $('stat-deploys').textContent = stats.deploys;
+  if (stats.fixes) $('stat-fixes').textContent = stats.fixes;
+}
+
+// ============ UPDATE FIX SSH STATUS ============
+function updateFixSshStatus() {
+  var tag = $('fix-ssh-tag'), info = $('fix-ssh-info');
+  if (!tag || !info) return;
+  if (S.sshConnected && S.sshSessionId) {
+    tag.className = 'tag tag-green'; tag.textContent = '已连接';
+    info.textContent = $('ssh-host-info') ? $('ssh-host-info').textContent : '服务器已连接';
+  } else {
+    tag.className = 'tag tag-gray'; tag.textContent = '未连接';
+    info.textContent = '请先连接服务器';
+  }
 }
 
 // ============ PWA ============
