@@ -1,27 +1,25 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.zhinenti.aistaff',
-  appName: 'AI智能客服',
+  appId: 'com.zhinenti.deploy',
+  appName: '智能部署助手',
   webDir: 'frontend',
   bundledWebRuntime: false,
   server: {
-    url: 'https://www.zhinenti.cn',  // 线上模式：直接加载线上页面
-    // 如果要打包静态文件，注释掉 url 并取消下面注释：
-    // android: { allowMixedContent: true }
+    url: 'https://deploy.zhinenti.cn',  // 线上模式：直接加载线上页面
   },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,
-      backgroundColor: '#6366f1',
+      backgroundColor: '#0d1117',
       androidSplashResourceName: 'splash',
       androidScaleType: 'CENTER_CROP',
       showSpinner: false,
     },
     StatusBar: {
-      style: 'LIGHT',
-      backgroundColor: '#6366f1',
+      style: 'DARK',
+      backgroundColor: '#0d1117',
     },
     Keyboard: {
       resize: 'body',
@@ -32,9 +30,6 @@ const config: CapacitorConfig = {
     allowMixedContent: true,
     captureInput: true,
     webContentsDebuggingEnabled: false,
-  },
-  ios: {
-    scheme: 'AI智能客服',
   },
 };
 
