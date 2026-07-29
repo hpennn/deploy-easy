@@ -16,6 +16,7 @@ COPY src/ ./src/
 
 # Copy frontend (single-file HTML + PWA assets)
 COPY frontend/index.html ./frontend/index.html
+COPY frontend/download.html ./frontend/download.html
 COPY frontend/manifest.json ./frontend/manifest.json
 COPY frontend/sw.js ./frontend/sw.js
 COPY frontend/icons/ ./frontend/icons/

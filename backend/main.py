@@ -323,8 +323,17 @@ async def serve_icon(filename: str):
 async def serve_download():
     dl = os.path.join(frontend_path, "download.html")
     if os.path.isfile(dl):
-        return FileResponse(dl)
-    return FileResponse(os.path.join(frontend_static, "download.html"))
+        return FileResponse(dl, media_type="text/html")
+    fallback = os.path.join(frontend_static, "download.html")
+    if os.path.isfile(fallback):
+        return FileResponse(fallback, media_type="text/html")
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse("<h1>download.html not found</h1>", status_code=404)
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "message": "Deploy Easy运行中", "version": "2.2.0"}
 
 
 # SPA fallback for Vue.js router
@@ -340,11 +349,6 @@ async def serve_spa(full_path: str):
         return FileResponse(index)
     from fastapi.responses import HTMLResponse
     return HTMLResponse("<h1>智能部署助手</h1><p>前端未构建，请先运行: cd frontend && npm install && npm run build</p>")
-
-
-@app.get("/health")
-async def health_check():
-    return {"status": "ok", "message": "Deploy Easy运行中", "version": "2.2.0"}
 
 
 if __name__ == "__main__":
