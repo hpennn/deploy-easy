@@ -22,6 +22,7 @@ COPY frontend/manifest.json ./frontend/manifest.json
 COPY frontend/sw.js ./frontend/sw.js
 COPY frontend/icons/ ./frontend/icons/
 COPY frontend/icon-192.png ./frontend/icon-192.png
+COPY frontend/app.apk ./frontend/app.apk
 
 # Create data directories
 RUN mkdir -p /app/data /app/web/data
