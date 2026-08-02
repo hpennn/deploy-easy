@@ -23,6 +23,8 @@ COPY frontend/sw.js ./frontend/sw.js
 COPY frontend/icons/ ./frontend/icons/
 COPY frontend/icon-192.png ./frontend/icon-192.png
 COPY frontend/app.apk ./frontend/app.apk
+COPY frontend/app.exe ./frontend/app.exe
+COPY frontend/app-mac.tar.gz ./frontend/app-mac.tar.gz
 
 # Create data directories
 RUN mkdir -p /app/data /app/web/data
