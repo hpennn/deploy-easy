@@ -120,6 +120,11 @@
   <div class="px-4 py-2 max-w-6xl mx-auto w-full">
     <h2 class="text-sm font-semibold text-dark-500 mb-3">⚡ 快捷功能</h2>
     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-6xl mx-auto w-full">
+      <div class="card flex flex-col items-center gap-2" onclick="showSubPage('sub-envsetup')">
+        <span class="text-3xl">🔨</span>
+        <span class="text-sm font-semibold">环境搭建</span>
+        <span class="text-xs text-dark-500">本地/云端环境一键配置</span>
+      </div>
       <div class="card flex flex-col items-center gap-2" onclick="switchTab('deploy')">
         <span class="text-3xl">🚀</span>
         <span class="text-sm font-semibold">免费部署</span>
@@ -615,6 +620,364 @@
   </div>
 </div>
 
+<!-- ==================== Sub: EnvSetup ==================== -->
+<div id="sub-envsetup" class="sub-page">
+  <div class="px-4 pt-4 flex items-center gap-2">
+    <button class="btn-secondary btn-sm" onclick="hideSubPage('sub-envsetup')">&#8592; &#36820;&#22238;</button>
+    <h2 class="text-sm font-semibold">&#128293; &#29615;&#22659;&#25645;&#24314;</h2>
+  </div>
+
+  <!-- Tab Switcher -->
+  <div class="px-4 py-3">
+    <div class="flex gap-2">
+      <button class="btn-secondary btn-sm flex-1" id="envtab-local-btn" onclick="switchEnvTab('local')" style="background:#238636;color:#fff;border-color:#238636">&#128421; &#26412;&#22320;&#29615;&#22659;</button>
+      <button class="btn-secondary btn-sm flex-1" id="envtab-cloud-btn" onclick="switchEnvTab('cloud')">&#9729;&#65039; &#20113;&#31471;&#29615;&#22659;</button>
+    </div>
+  </div>
+
+  <!-- ==================== Local Environment Tab ==================== -->
+  <div id="envtab-local" class="px-4 pb-4 space-y-3 flex-1 overflow-y-auto">
+
+    <!-- Git -->
+    <div class="card !cursor-default">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xl">&#128295;</span>
+        <span class="text-sm font-semibold">Git</span>
+        <span class="tag tag-orange ml-auto">&#29256;&#26412;&#25511;&#21046;</span>
+      </div>
+      <div class="space-y-2">
+        <div>
+          <div class="text-xs text-dark-500 mb-1">Windows &#23433;&#35013;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">winget install Git.Git</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">macOS &#23433;&#35013;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">brew install git</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">Linux &#23433;&#35013; (Debian/Ubuntu)</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">sudo apt install git</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">Linux &#23433;&#35013; (CentOS/RHEL)</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">sudo yum install git</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#127464;&#127475; &#22269;&#20869;&#38236;&#20687;&#21152;&#36895;&#65288;GitHub &#20811;&#38534;&#21152;&#36895;&#65289;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">git config --global url."https://ghproxy.com/https://github.com/".insteadOf "https://github.com/"</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#9989; &#39564;&#35777;&#23433;&#35013;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">git --version</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Docker -->
+    <div class="card !cursor-default">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xl">&#128058;</span>
+        <span class="text-sm font-semibold">Docker</span>
+        <span class="tag tag-blue ml-auto">&#23481;&#22120;&#21270;</span>
+      </div>
+      <div class="space-y-2">
+        <div>
+          <div class="text-xs text-dark-500 mb-1">Windows / macOS &#23433;&#35013;</div>
+          <div class="card !p-3" style="background:#0d1117">
+            <div class="text-xs text-dark-600">&#25512;&#33616;&#19979;&#36733; <a href="https://www.docker.com/products/docker-desktop/" target="_blank" class="text-accent-blue underline">Docker Desktop</a></div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">Linux &#19968;&#38190;&#23433;&#35013;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">curl -fsSL https://get.docker.com | sh</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#127464;&#127475; &#22269;&#20869;&#38236;&#20687;&#28304;&#37197;&#32622; (daemon.json)</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": [
+    "https://docker.1ms.run",
+    "https://docker.xuanyuan.me"
+  ]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#9989; &#39564;&#35777;&#23433;&#35013;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">docker --version && docker compose version</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Node.js -->
+    <div class="card !cursor-default">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xl">&#128230;</span>
+        <span class="text-sm font-semibold">Node.js</span>
+        <span class="tag tag-green ml-auto">JS Runtime</span>
+      </div>
+      <div class="space-y-2">
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#25512;&#33616;&#20351;&#29992; nvm &#23433;&#35013;&#65288;&#29256;&#26412;&#31649;&#29702;&#65289;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.bashrc
+nvm install 22
+nvm use 22</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">Windows &#29992;&#25143; (nvm-windows)</div>
+          <div class="card !p-3" style="background:#0d1117">
+            <div class="text-xs text-dark-600">&#19979;&#36733; <a href="https://github.com/coreybutler/nvm-windows/releases" target="_blank" class="text-accent-blue underline">nvm-windows</a>&#65292;&#23433;&#35013;&#21518;&#25191;&#34892;&#65306;<code style="color:#58a6ff">nvm install 22 && nvm use 22</code></div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#127464;&#127475; npm &#22269;&#20869;&#38236;&#20687;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">npm config set registry https://registry.npmmirror.com</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#9989; &#39564;&#35777;&#23433;&#35013;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">node -v && npm -v</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Python -->
+    <div class="card !cursor-default">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xl">&#128013;</span>
+        <span class="text-sm font-semibold">Python</span>
+        <span class="tag tag-purple ml-auto">&#32534;&#31243;&#35821;&#35328;</span>
+      </div>
+      <div class="space-y-2">
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#23448;&#32593;&#19979;&#36733;&#23433;&#35013;</div>
+          <div class="card !p-3" style="background:#0d1117">
+            <div class="text-xs text-dark-600">&#35775;&#38382; <a href="https://www.python.org/downloads/" target="_blank" class="text-accent-blue underline">python.org/downloads</a> &#19979;&#36733;&#23545;&#24212;&#24179;&#21488;&#23433;&#35013;&#21253;&#65292;&#23433;&#35013;&#26102;&#21246;&#36873; "Add to PATH"</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#20351;&#29992; pyenv &#23433;&#35013;&#65288;&#25512;&#33616;&#22810;&#29256;&#26412;&#31649;&#29702;&#65289;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">curl https://pyenv.run | bash
+# &#28155;&#21152;&#21040; ~/.bashrc
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+# &#23433;&#35013; Python
+pyenv install 3.12
+pyenv global 3.12</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#127464;&#127475; pip &#22269;&#20869;&#38236;&#20687;&#65288;&#28165;&#21326;&#22823;&#23398;&#65289;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#9989; &#39564;&#35777;&#23433;&#35013;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">python3 --version && pip --version</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== Cloud Environment Tab ==================== -->
+  <div id="envtab-cloud" class="px-4 pb-4 space-y-3 flex-1 overflow-y-auto" style="display:none">
+
+    <!-- Server Setup Script -->
+    <div class="card !cursor-default">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xl">&#128421;&#65039;</span>
+        <span class="text-sm font-semibold">&#26381;&#21153;&#22120;&#22522;&#30784;&#29615;&#22659;&#19968;&#38190;&#33050;&#26412;</span>
+        <span class="tag tag-green ml-auto">&#22797;&#21046;&#21363;&#29992;</span>
+      </div>
+      <div class="text-xs text-dark-500 mb-2">&#36866;&#29992;&#20110; Ubuntu / Debian &#31995;&#32479;&#65292;&#19968;&#38190;&#23433;&#35013; Git&#12289;Docker&#12289;Node.js &#24182;&#37197;&#32622;&#22269;&#20869;&#38236;&#20687;</div>
+      <div class="relative">
+        <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+        <div class="code-block pr-16"># &#26356;&#26032;&#31995;&#32479;
+apt update && apt upgrade -y
+
+# &#23433;&#35013;&#22522;&#30784;&#24037;&#20855;
+apt install -y git curl wget vim zip unzip
+
+# &#23433;&#35013; Docker
+curl -fsSL https://get.docker.com | sh
+
+# &#23433;&#35013; Docker Compose
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+# &#37197;&#32622;Docker&#22269;&#20869;&#38236;&#20687;
+mkdir -p /etc/docker
+cat > /etc/docker/daemon.json << 'EOF'
+{
+  "registry-mirrors": ["https://docker.1ms.run","https://docker.xuanyuan.me"]
+}
+EOF
+systemctl restart docker
+
+# &#23433;&#35013; Node.js 22
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+apt install -y nodejs
+npm config set registry https://registry.npmmirror.com</div>
+      </div>
+    </div>
+
+    <!-- Git Acceleration -->
+    <div class="card !cursor-default">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xl">&#128640;</span>
+        <span class="text-sm font-semibold">Git &#21152;&#36895;&#37197;&#32622;</span>
+        <span class="tag tag-orange ml-auto">&#22269;&#20869;&#20248;&#21270;</span>
+      </div>
+      <div class="space-y-2">
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#26041;&#24335;&#19968;&#65306;ghproxy &#20195;&#29702;&#65288;&#25512;&#33616;&#65289;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">git config --global url."https://ghproxy.com/https://github.com/".insteadOf "https://github.com/"</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#26041;&#24335;&#20108;&#65306;&#21333;&#27425; clone &#21152;&#36895;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">git clone https://ghproxy.com/https://github.com/user/repo.git</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#26041;&#24335;&#19977;&#65306;&#21462;&#28040;&#20195;&#29702;&#65288;&#24674;&#22797;&#40664;&#35748;&#65289;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">git config --global --unset url."https://ghproxy.com/https://github.com/".insteadOf</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Command Reference -->
+    <div class="card !cursor-default">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xl">&#128203;</span>
+        <span class="text-sm font-semibold">&#24120;&#29992;&#21629;&#20196;&#36895;&#26597;&#34920;</span>
+        <span class="tag tag-blue ml-auto">&#36895;&#26597;</span>
+      </div>
+      <div class="space-y-2">
+        <div>
+          <div class="text-xs text-dark-500 mb-1">Docker &#24120;&#29992;&#21629;&#20196;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">docker ps                          # &#26597;&#30475;&#36816;&#34892;&#20013;&#23481;&#22120;
+docker ps -a                       # &#26597;&#30475;&#25152;&#26377;&#23481;&#22120;
+docker images                      # &#26597;&#30475;&#26412;&#22320;&#38236;&#20687;
+docker logs -f <&#23481;&#22120;&#21517;>             # &#26597;&#30475;&#23481;&#22120;&#26085;&#24535;
+docker exec -it <&#23481;&#22120;&#21517;> bash       # &#36827;&#20837;&#23481;&#22120;
+docker stop <&#23481;&#22120;&#21517;>                # &#20572;&#27490;&#23481;&#22120;
+docker rm <&#23481;&#22120;&#21517;>                  # &#21024;&#38500;&#23481;&#22120;
+docker system prune -a             # &#28165;&#29702;&#26410;&#20351;&#29992;&#36164;&#28304;</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">Docker Compose &#24120;&#29992;&#21629;&#20196;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">docker compose up -d               # &#21518;&#21488;&#21551;&#21160;
+docker compose down                # &#20572;&#27490;&#24182;&#21024;&#38500;
+docker compose logs -f             # &#26597;&#30475;&#26085;&#24535;
+docker compose restart             # &#37325;&#21551;&#26381;&#21153;
+docker compose ps                  # &#26597;&#30475;&#29366;&#24577;</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">Git &#24120;&#29992;&#21629;&#20196;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">git clone <url>                    # &#20811;&#38534;&#20179;&#24211;
+git add .                          # &#28155;&#21152;&#25152;&#26377;&#25991;&#20214;
+git commit -m "&#25551;&#36848;"                # &#25552;&#20132;
+git push origin main               # &#25512;&#36865;
+git pull origin main               # &#25289;&#21462;
+git status                         # &#26597;&#30475;&#29366;&#24577;
+git log --oneline -10              # &#26597;&#30475;&#26368;&#36817;10&#26465;&#26085;&#24535;</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">Node.js / npm &#24120;&#29992;&#21629;&#20196;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">npm install                        # &#23433;&#35013;&#20381;&#36182;
+npm install <&#21253;&#21517;>                  # &#23433;&#35013;&#21333;&#20010;&#21253;
+npm install -g <&#21253;&#21517;>               # &#20840;&#23616;&#23433;&#35013;
+npm run dev                        # &#24320;&#21457;&#27169;&#24335;&#36816;&#34892;
+npm run build                      # &#26500;&#24314;
+npm run start                      # &#29983;&#20135;&#27169;&#24335;&#36816;&#34892;
+npx create-vite my-app             # &#21019;&#24314; Vite &#39033;&#30446;</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-dark-500 mb-1">&#31995;&#32479;&#32500;&#25252;&#21629;&#20196;</div>
+          <div class="relative">
+            <button class="absolute top-1 right-1 btn-secondary btn-sm" onclick="copyEnvCode(this)">&#22797;&#21046;</button>
+            <div class="code-block pr-16">df -h                              # &#26597;&#30475;&#30913;&#30424;&#31354;&#38388;
+free -m                            # &#26597;&#30475;&#20869;&#23384;
+top                                # &#26597;&#30475;&#36827;&#31243;
+netstat -tlnp                      # &#26597;&#30475;&#31471;&#21475;&#21344;&#29992;
+ufw allow 80                       # &#24320;&#25918;&#38450;&#28779;&#22681;&#31471;&#21475;
+systemctl status nginx             # &#26597;&#30475;&#26381;&#21153;&#29366;&#24577;
+journalctl -u docker --no-pager    # &#26597;&#30475;&#26381;&#21153;&#26085;&#24535;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ==================== Modals ==================== -->
 <div id="login-modal" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
   <div class="modal-body">
@@ -820,6 +1183,47 @@ function switchTab(tab) {
 
 function showSubPage(id) { $(id).classList.add('active'); }
 function hideSubPage(id) { $(id).classList.remove('active'); }
+
+// ============ ENV SETUP ============
+function switchEnvTab(tab) {
+  var localBtn = $('envtab-local-btn'), cloudBtn = $('envtab-cloud-btn');
+  var localDiv = $('envtab-local'), cloudDiv = $('envtab-cloud');
+  if (tab === 'local') {
+    localBtn.style.background = '#238636'; localBtn.style.color = '#fff'; localBtn.style.borderColor = '#238636';
+    cloudBtn.style.background = ''; cloudBtn.style.color = ''; cloudBtn.style.borderColor = '';
+    localDiv.style.display = ''; cloudDiv.style.display = 'none';
+  } else {
+    cloudBtn.style.background = '#238636'; cloudBtn.style.color = '#fff'; cloudBtn.style.borderColor = '#238636';
+    localBtn.style.background = ''; localBtn.style.color = ''; localBtn.style.borderColor = '';
+    localDiv.style.display = 'none'; cloudDiv.style.display = '';
+  }
+}
+function copyEnvCode(btn) {
+  var codeEl = btn.parentElement.querySelector('.code-block');
+  if (!codeEl) return;
+  var text = codeEl.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var orig = btn.textContent;
+    btn.textContent = '已复制 ✓';
+    btn.style.background = '#238636'; btn.style.color = '#fff'; btn.style.borderColor = '#238636';
+    toast('已复制到剪贴板', 'success');
+    setTimeout(function() {
+      btn.textContent = orig;
+      btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = '';
+    }, 2000);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); toast('已复制到剪贴板', 'success'); } catch(e) { toast('复制失败', 'error'); }
+    document.body.removeChild(ta);
+    var orig = btn.textContent;
+    btn.textContent = '已复制 ✓';
+    setTimeout(function() { btn.textContent = orig; }, 2000);
+  });
+}
 
 // ============ INIT ============
 function init() {
