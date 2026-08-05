@@ -14,7 +14,7 @@ COPY backend/ ./backend/
 COPY web/ ./web/
 COPY src/ ./src/
 
-# Copy frontend files (wildcard for app downloads)
+# Copy frontend (single-file HTML + PWA assets)
 COPY frontend/index.html ./frontend/index.html
 COPY frontend/sitemap.xml ./frontend/sitemap.xml
 COPY frontend/download.html ./frontend/download.html
@@ -22,7 +22,11 @@ COPY frontend/manifest.json ./frontend/manifest.json
 COPY frontend/sw.js ./frontend/sw.js
 COPY frontend/icons/ ./frontend/icons/
 COPY frontend/icon-192.png ./frontend/icon-192.png
-COPY frontend/app* ./frontend/
+
+# Copy app installation files (APK, EXE, macOS)
+COPY frontend/app.apk ./frontend/app.apk
+COPY frontend/app.exe ./frontend/app.exe
+COPY frontend/app-mac.tar.gz ./frontend/app-mac.tar.gz
 
 # Create data directories
 RUN mkdir -p /app/data /app/web/data
